@@ -1,0 +1,27 @@
+{{ define "main" }}
+    <section class="capture-container">
+        <img class="capture-image" src="{{  path.Join .File.Dir .Params.capture_image_path | relURL }}" alt="{{ .Params.capture_alt }}">
+    </section>
+    <section class="capture-details-container">
+        <article class="capture-description">
+            {{ .Content }}
+        </article>
+        <hr/>
+        <article class="capture-details">
+
+            {{/* Iterate of site.params.captureDetailKeys to preserve order of randered details */}}
+            {{ range $detailGroup := .Site.Params.captureDetailKeys }}
+                {{ range $key := . }}
+                    {{ $key = printf "capture_%s" $key }}
+                    {{ $value := index $.Params $key }}
+                    {{ if and (ne $value "")  (hasPrefix $key "capture_") }}
+                        <div class="capture-detail">
+                            <div class="capture-detail-title">{{ humanize (strings.TrimPrefix "capture_" $key) }}</div><div class="capture-detail-value">{{ $value }}</div>
+                        </div>
+                    {{ end }}
+                {{ end }}
+
+            {{ end }}
+        </article>
+    </section>
+{{ end }}

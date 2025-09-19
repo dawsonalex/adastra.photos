@@ -2,6 +2,29 @@ baseURL = 'https://adastra.photos/'
 languageCode = 'en-US'
 title = 'Ad Astra'
 
+[params]
+    captureDetailKeys = [
+        [
+            "date",
+            "location",
+            "bortle_scale",
+            "ra_hms",
+        ],
+        [
+            "camera",
+            "focal_length",
+            "exposure",
+            "iso",
+            "f_number",
+        ],
+        [
+            "mount",
+        ],
+        [
+            "frames",
+        ],
+    ]
+
 [taxonomies]
 object = 'objects'
 tag = 'tags'

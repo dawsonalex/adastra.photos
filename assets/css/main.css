@@ -4,24 +4,37 @@
   font-weight: normal;
 }
 
+@font-face {
+  font-family: "Bruno Ace SC";
+  src: url("../font/BrunoAceSC-Regular.ttf") format("truetype");
+  font-weight: bold;
+}
+
 :root {
   --primary-font-color: #222;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  width: 100%;
+}
+
 body {
-  color: #222;
-  font-family: sans-serif;
-  line-height: 1.5;
+  width: 100%;
+  height: 100%;
   margin: 0;
+  color: #222;
+  font-family: "JetBrains Mono", monospace;
+  line-height: 1.5;
 
   background-color: #E8E8E8;
 }
 
-header {
-  padding: 16px 62px;
-}
-
-header > h1 {
+.site-title {
   text-align: end;
   margin: 0;
 
@@ -40,4 +53,108 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+.capture-title-container, .title-container {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: self-start;
+  justify-content: space-between;
+
+  padding: 16px;
+}
+
+.capture-heading {
+  margin: 0;
+  font-family: "Bruno Ace SC", sans-serif;
+}
+
+.thumb-heading > a {
+  color: #E8E8E8;
+}
+
+.capture-subheading-container {
+  padding: 0 16px 16px;
+}
+
+.capture-subheading-container > * {
+  margin: 0;
+}
+
+.capture-right-ascension-heading {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 500;
+}
+
+.capture-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.capture-thumb-container {
+  position: absolute;
+  width: 100%;
+}
+
+.capture-thumb-container img {
+  width: 100%;
+  position: relative;
+}
+
+.capture-thumb-container .thumb-heading {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 4px;
+}
+
+.capture-details-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin: 0 auto;
+  width: 90%;
+}
+
+.capture-details {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+
+  width: 100%;
+  margin: 0 auto;
+}
+
+/*
+TODO: Chnage this to Grid layout
+ */
+.capture-detail {
+  display: flex;
+  flex-direction: column;
+
+  margin: 16px 32px 16px 0;
+}
+
+.capture-detail-title {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 300;
+  text-wrap: nowrap;
+}
+
+.capture-detail-value {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: normal;
+  text-wrap: nowrap;
+  margin: 0;
+}
+
+.capture-details-container > hr {
+  width: 100%;
+}
+
+.capture-description {
+  width: 100%;
 }

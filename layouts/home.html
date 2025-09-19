@@ -1,7 +1,9 @@
 {{ define "main" }}
-  {{ .Content }}
-  {{ range site.RegularPages }}
-    <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-    {{ .Summary }}
-  {{ end }}
+    {{ $captures := where site.RegularPages "Params.type" "eq" "capture" }}
+    {{ range $captures }}
+        <article class="capture-thumb-container">
+            <img class="capture-thumb" src="{{  path.Join .File.Dir .Params.capture_image_thumb_path | relURL }}" alt="{{ .Params.capture_alt }}">
+            <h2 class="capture-heading thumb-heading"><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
+        </article>
+    {{ end }}
 {{ end }}
