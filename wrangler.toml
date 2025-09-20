@@ -1,5 +1,5 @@
 # Wrangler config taken from https://gohugo.io/host-and-deploy/host-on-cloudflare/
-name = "hosting-cloudflare-worker"
+name = "adastra-site"
 compatibility_date = "2025-07-31"
 
 [build]
