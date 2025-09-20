@@ -8,8 +8,8 @@
     align-items: center;
     justify-content: end;
 
-    padding: 0;
-    margin-top: 10px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .capture-title-container {
@@ -31,7 +31,7 @@
   }
 
   .capture-right-ascension-heading {
-    margin: 0 62px 10px 0;
+    margin: 0 62px 16px 0;
   }
 
   .capture-details-container {
