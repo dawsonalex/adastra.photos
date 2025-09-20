@@ -11,7 +11,17 @@
 }
 
 :root {
-  --primary-font-color: #222;
+  --primary-font-color: #1E1E1E;
+  --inverted-font-color: #E8E8E8;
+  --background-color: #E8E8E8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-font-color: #E8E8E8;
+    --inverted-font-color: #1E1E1E;
+    --background-color: #1E1E1E;
+  }
 }
 
 * {
@@ -24,11 +34,11 @@ html {
 
 body {
   margin: 0;
-  color: #222;
+  color: var(--primary-font-color);
   font-family: "JetBrains Mono", monospace;
   line-height: 1.5;
 
-  background-color: #E8E8E8;
+  background-color: var(--background-color);
 }
 
 .site-title {
@@ -39,7 +49,7 @@ body {
 }
 
 footer {
-  border-top: 1px solid #222;
+  border-top: 1px solid var(--primary-font-color);
   margin-top: 1rem;
 }
 
@@ -67,7 +77,7 @@ a:hover {
 }
 
 .thumb-heading > a {
-  color: #E8E8E8;
+  color: var(--primary-font-color);
 }
 
 .capture-subheading-container {
