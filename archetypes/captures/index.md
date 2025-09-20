@@ -7,7 +7,6 @@ title = '{{ replace .File.ContentBaseName "-" " " | title }}'
 objects = [''] # e.g., ['Sadr', 'IC 1318']
 tags = [''] # e.g., ['nebula', 'emission', 'Ha']
 
-# TODO: Change the format here to snake case and add an image alt field
 # Capture specific fields
 capture_image_path = '' # e.g., 'images/2019-01-01-00-00-00.jpg'
 capture_image_thumb_path = '' # e.g., 'images/2019-01-01-00-00-00-thumb.jpg' recommended size 1024x512

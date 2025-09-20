@@ -22,6 +22,8 @@
 
   .capture-thumb-container {
     font-size: xx-large;
+
+    max-height: 400px;
   }
 
   .capture-subheading-container {
