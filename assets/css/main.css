@@ -12,14 +12,13 @@
 
 :root {
   --primary-font-color: #1E1E1E;
-  --inverted-font-color: #E8E8E8;
+  --capture-thumb-font-color: #E8E8E8;
   --background-color: #E8E8E8;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --primary-font-color: #E8E8E8;
-    --inverted-font-color: #1E1E1E;
     --background-color: #1E1E1E;
   }
 }
@@ -77,7 +76,7 @@ a:hover {
 }
 
 .thumb-heading > a {
-  color: var(--primary-font-color);
+  color: var(--capture-thumb-font-color);
 }
 
 .capture-subheading-container {
