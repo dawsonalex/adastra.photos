@@ -1,15 +1,3 @@
-@font-face {
-  font-family: "Major Mono";
-  src: url("../font/major_mono.ttf") format("truetype");
-  font-weight: normal;
-}
-
-@font-face {
-  font-family: "Bruno Ace SC";
-  src: url("../font/BrunoAceSC-Regular.ttf") format("truetype");
-  font-weight: bold;
-}
-
 :root {
   --primary-font-color: #1E1E1E;
   --capture-thumb-font-color: #E8E8E8;
@@ -174,4 +162,38 @@ main .capture-thumb-container:last-child {
 
 .capture-description {
   width: 100%;
+}
+
+.not-found-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  font-size: 10rem;
+  margin-top: 32px;
+}
+
+.not-found-text {
+  font-size: 1em;
+  line-height: 1em;
+}
+
+.not-found-image {
+  max-width: 1em;
+  mask-image: radial-gradient(black 50%, transparent 60%);
+}
+
+.not-found-text-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 2rem;
+
+  padding: 24px;
+}
+
+.not-found-text-container > * {
+  margin: 0;
 }

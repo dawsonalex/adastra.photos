@@ -47,4 +47,16 @@
   .capture-details {
     justify-content: start;
   }
+
+  .not-found-container {
+    font-size: 40rem;
+  }
+
+  .not-found-text {
+    font-size: 1em;
+  }
+
+  .not-found-text-container {
+    font-size: 4rem;
+  }
 }
