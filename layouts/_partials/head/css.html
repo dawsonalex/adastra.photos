@@ -1,29 +1,11 @@
-{{- with resources.Get "css/main.css" }}
-  {{- if hugo.IsDevelopment }}
-    <link rel="stylesheet" href="{{ .RelPermalink }}">
-  {{- else }}
-    {{- with . | minify | fingerprint }}
-      <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
-    {{- end }}
-  {{- end }}
-{{- end }}
-
-{{- with resources.Get "css/main_medium.css" }}
-    {{- if hugo.IsDevelopment }}
-        <link rel="stylesheet" href="{{ .RelPermalink }}">
-    {{- else }}
-        {{- with . | minify | fingerprint }}
-            <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
-        {{- end }}
-    {{- end }}
-{{- end }}
-
-{{- with resources.Get "css/fonts.css" }}
-    {{- if hugo.IsDevelopment }}
-        <link rel="stylesheet" href="{{ .RelPermalink }}">
-    {{- else }}
-        {{- with . | minify | fingerprint }}
-            <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
-        {{- end }}
-    {{- end }}
-{{- end }}
+{{ if hugo.IsDevelopment }}
+    <link rel="stylesheet" href="{{"css/main.css" | absURL}}" />
+    <link rel="stylesheet" href="{{"css/main_medium.css" | absURL}}" />
+    <link rel="stylesheet" href="{{"css/fonts.css" | absURL}}" />
+{{ else }}
+    <style>
+        {{ readFile "assets/css/main.css" | safeCSS }}
+        {{ readFile "assets/css/main_medium.css" | safeCSS }}
+        {{ readFile "assets/css/fonts.css" | safeCSS }}
+    </style>
+{{ end }}
