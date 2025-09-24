@@ -1,23 +1,27 @@
 @font-face {
   font-family: "Major Mono";
+  font-display: swap;
   src: url("../font/major_mono.ttf") format("truetype");
   font-weight: normal;
 }
 
 @font-face {
   font-family: "Bruno Ace SC";
+  font-display: swap;
   src: url("../font/BrunoAceSC-Regular.ttf") format("truetype");
   font-weight: bold;
 }
 
 @font-face {
   font-family: "JetBrains Mono";
+  font-display: swap;
   src: url("../font/jetbrains-mono/ttf/JetBrainsMono-Regular.ttf") format("truetype");
   font-weight: normal;
 }
 
 @font-face {
   font-family: "JetBrains Mono";
+  font-display: swap;
   src: url("../font/jetbrains-mono/ttf/JetBrainsMono-ExtraLight.ttf") format("truetype");
   font-weight: 300;
 }
