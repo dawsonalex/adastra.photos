@@ -63,6 +63,12 @@ a:hover {
   font-family: "Bruno Ace SC", sans-serif;
 }
 
+.capture-container {
+  margin: 2em;
+  padding: 2em;
+  background-color: #fefefe;
+}
+
 .thumb-heading > a {
   color: var(--capture-thumb-font-color);
 }
