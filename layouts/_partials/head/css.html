@@ -1,11 +1,9 @@
-{{ if hugo.IsDevelopment }}
-    <link rel="stylesheet" href="{{"css/main.css" | absURL}}" />
-    <link rel="stylesheet" href="{{"css/main_medium.css" | absURL}}" />
-    <link rel="stylesheet" href="{{"css/fonts.css" | absURL}}" />
-{{ else }}
-    <style>
-        {{ readFile "assets/css/main.css" | safeCSS }}
-        {{ readFile "assets/css/main_medium.css" | safeCSS }}
-        {{ readFile "assets/css/fonts.css" | safeCSS }}
-    </style>
-{{ end }}
+<style>
+    {{ with resources.Get "css/main.css" }}
+        {{ .Content | safeCSS }}
+    {{ end }}
+    {{ with resources.Get "css/main_medium.css" }}
+        {{ .Content | safeCSS }}
+    {{ end }}
+</style>
+ Cleaned          │  0
