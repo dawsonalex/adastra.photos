@@ -13,7 +13,6 @@ capture_location = 'Widgets Farm, Frome'
 capture_date = 'August 27, 2025'
 capture_camera = 'Canon EOS 550D'
 capture_optics = 'Carl Zeiss 135mm f/3.5'
-capture_integration = '52m'
 capture_frames = 52
 capture_exposure = '60s'
 capture_iso = 400

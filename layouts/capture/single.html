@@ -14,9 +14,9 @@
   {{ $desig       := or .Params.capture_designation "—" }}
   {{ $ra          := or .Params.capture_ra_hms  "—" }}
   {{ $dec         := or .Params.capture_dec_dms "—" }}
-  {{ $integ       := or .Params.capture_integration "—" }}
   {{ $frames      := int (default 0 .Params.capture_frames) }}
   {{ $exp         := or .Params.capture_exposure "—" }}
+  {{ $integ       := or (partial "integration.html" .) "—" }}
   {{ $iso         := or .Params.capture_iso "—" }}
   {{ $fnum        := or .Params.capture_f_number "—" }}
   {{ $focal       := or .Params.capture_focal_length "" }}
@@ -26,7 +26,7 @@
   {{ $location    := or .Params.capture_location "" }}
   {{ $bortle      := or .Params.capture_bortle_scale site.Params.defaultBortleScale }}
 
-  {{ $singleFrame := eq $integ "—" }}
+  {{ $singleFrame := lt $frames 2 }}
   {{ $prev := .PrevInSection }}
   {{ $next := .NextInSection }}
 
@@ -108,7 +108,7 @@
 
         <div class="aa-stat-strip">
           <div class="aa-stat">
-            <span class="aa-stat__n">{{ if $singleFrame }}—{{ else }}{{ $integ }}{{ end }}</span>
+            <span class="aa-stat__n">{{ $integ }}</span>
             <span class="aa-stat__label">Integration</span>
           </div>
           <div class="aa-stat">
@@ -131,7 +131,7 @@
 
         <section class="aa-spec-group">
           <span class="aa-kicker">Acquisition</span>
-          <div class="aa-drow"><span class="aa-drow__k">Integration</span><span class="aa-drow__v">{{ if $singleFrame }}single frame{{ else }}{{ $integ }}{{ end }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">Integration</span><span class="aa-drow__v">{{ $integ }}</span></div>
           <div class="aa-drow"><span class="aa-drow__k">Subframes</span><span class="aa-drow__v">{{ if $singleFrame }}1 × {{ $exp }}{{ else }}{{ $frames }} × {{ $exp }}{{ end }}</span></div>
           <div class="aa-drow"><span class="aa-drow__k">Exposure</span><span class="aa-drow__v">{{ $exp }}</span></div>
           <div class="aa-drow"><span class="aa-drow__k">ISO</span><span class="aa-drow__v">{{ $iso }}</span></div>

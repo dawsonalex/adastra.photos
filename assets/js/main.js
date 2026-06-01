@@ -94,7 +94,9 @@
           'left .45s cubic-bezier(.4,0,.2,1),' +
           'top .45s cubic-bezier(.4,0,.2,1)';
 
-        let mode = 'cover';     // matches the CSS default
+        // Initial mode mirrors html[data-fit] when a page sets a default (e.g. capture_default_fit
+        // frontmatter); otherwise matches the CSS default of cover.
+        let mode = root.getAttribute('data-fit') === 'contain' ? 'contain' : 'cover';
         let handedOff = false;  // has JS taken over geometry?
         let coverRect = null;
         let containRect = null;
@@ -136,6 +138,7 @@
         // Disabled until decode — naturalWidth/Height are 0 before then,
         // and a snap-toggle would defeat the animation we're enabling.
         setButtonsEnabled(false);
+        syncPressed(mode);
         const onReady = () => {
           if (fitImg.naturalWidth && fitImg.naturalHeight) setButtonsEnabled(true);
         };
@@ -150,7 +153,7 @@
           fitImg.style.objectFit = 'fill';
           fitImg.style.right = 'auto';
           fitImg.style.bottom = 'auto';
-          applyRect(coverRect, false);
+          applyRect(mode === 'contain' ? containRect : coverRect, false);
           handedOff = true;
           return true;
         };
@@ -164,17 +167,18 @@
 
         fitButtons.forEach((btn) => {
           btn.addEventListener('click', () => {
+            const target = mode === 'cover' ? 'contain' : 'cover';
             if (!handedOff) {
               if (!handoff()) return;
               // Two rAFs so the snap commits before the animation starts —
               // otherwise the browser collapses snap + animate into one
               // style change and there's nothing to transition from.
               requestAnimationFrame(() => {
-                requestAnimationFrame(() => setMode('contain', true));
+                requestAnimationFrame(() => setMode(target, true));
               });
               return;
             }
-            setMode(mode === 'cover' ? 'contain' : 'cover', true);
+            setMode(target, true);
           });
         });
 

@@ -6,20 +6,7 @@
   {{ $totalMinutes := 0.0 }}
   {{ range $captures }}
     {{ $totalFrames = add $totalFrames (int (default 0 .Params.capture_frames)) }}
-    {{/* Try to add this capture's integration to the running total. We accept
-         either an explicit `capture_integration_minutes` field (a number) or
-         we approximate from frames × exposure-seconds when the exposure is
-         written as e.g. "30s". */}}
-    {{ with .Params.capture_integration_minutes }}
-      {{ $totalMinutes = add $totalMinutes (float .) }}
-    {{ else }}
-      {{ $exp := default "" .Params.capture_exposure }}
-      {{ if and (hasSuffix $exp "s") (not (in $exp "/")) }}
-        {{ $secs := float (strings.TrimSuffix "s" $exp) }}
-        {{ $frames := float (int (default 0 .Params.capture_frames)) }}
-        {{ $totalMinutes = add $totalMinutes (div (mul $secs $frames) 60.0) }}
-      {{ end }}
-    {{ end }}
+    {{ $totalMinutes = add $totalMinutes (partial "integration-minutes.html" .) }}
   {{ end }}
   {{ $totalMin := int (math.Round $totalMinutes) }}
   {{ $h := div $totalMin 60 }}
@@ -59,6 +46,9 @@
         {{/* Build-time thumbnails from the page bundle's full-res image.
              Hugo caches processed outputs in resources/_gen/images/. */}}
         {{ $orig := .Resources.GetMatch .Params.capture_image_path }}
+        {{ if not $orig }}
+          {{ errorf "capture %q: image resource %q not found in bundle" .File.Path .Params.capture_image_path }}
+        {{ end }}
         {{ $small := $orig.Resize "400x webp q90" }}
         {{ $med   := $orig.Resize "800x webp q90" }}
         {{ $large := $orig.Resize "1200x webp q90" }}
@@ -69,7 +59,7 @@
         {{ $fTag := "" }}{{ if gt (len $tgs) 0 }}{{ $fTag = index $tgs  0 }}{{ end }}
         {{ $sub   := or .Params.capture_object_subtitle $fObj }}
         {{ $type  := or .Params.capture_object_type $fTag | default "" }}
-        {{ $integ := default "" .Params.capture_integration }}
+        {{ $integ := partial "integration.html" . }}
         {{ $frames := int (default 0 .Params.capture_frames) }}
         {{ $exp   := default "" .Params.capture_exposure }}
         {{ $date  := .Date | time.Format "2006.01.02" }}
@@ -91,12 +81,9 @@
             <h2 class="aa-tile__title">{{ .LinkTitle }}</h2>
             <span class="aa-tile__meta aa-meta">
               {{ with $sub }}<span>{{ . }}</span>{{ end }}
-              {{ if and $integ (ne $integ "—") }}
+              {{ if and (gt $frames 1) $integ }}
                 <span class="aa-meta__sep">/</span><span>{{ $integ }} integration</span>
                 <span class="aa-meta__sep">/</span><span>{{ $frames }} frames</span>
-              {{ else if $exp }}
-                <span class="aa-meta__sep">/</span><span>{{ $exp }}</span>
-                <span class="aa-meta__sep">/</span><span>{{ $date }}</span>
               {{ end }}
             </span>
           </span>

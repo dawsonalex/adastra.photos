@@ -1,0 +1,33 @@
+{{/* Returns a formatted integration time for a capture.
+
+     Resolution order:
+       1. Explicit `capture_integration` override (string), if non-empty.
+       2. Single-frame case: the exposure itself (e.g. "19s").
+       3. Computed from frames × exposure when exposure is "Ns" form,
+          formatted as "Xh Ym" / "Xh" / "Ym".
+       4. Empty string if none of the above can be derived.
+
+     Call with the page context:  {{ partial "integration.html" . }}
+*/ -}}
+{{ $override := default "" .Params.capture_integration -}}
+{{ $frames := int (default 0 .Params.capture_frames) -}}
+{{ $exp := default "" .Params.capture_exposure -}}
+{{ $out := "" -}}
+{{ if $override -}}
+  {{ $out = $override -}}
+{{ else if and (eq $frames 1) $exp -}}
+  {{ $out = $exp -}}
+{{ else if and (gt $frames 0) (hasSuffix $exp "s") (not (in $exp "/")) -}}
+  {{ $secs := float (strings.TrimSuffix "s" $exp) -}}
+  {{ $totalMin := int (math.Round (div (mul $secs (float $frames)) 60.0)) -}}
+  {{ $h := div $totalMin 60 -}}
+  {{ $m := mod $totalMin 60 -}}
+  {{ if eq $h 0 -}}
+    {{ $out = printf "%dm" $m -}}
+  {{ else if eq $m 0 -}}
+    {{ $out = printf "%dh" $h -}}
+  {{ else -}}
+    {{ $out = printf "%dh %dm" $h $m -}}
+  {{ end -}}
+{{ end -}}
+{{ return $out -}}
