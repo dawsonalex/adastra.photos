@@ -21,7 +21,17 @@
       {{ end }}
     {{ end }}
   {{ end }}
-  {{ $totalHours := printf "%.1fh" (div $totalMinutes 60.0) }}
+  {{ $totalMin := int (math.Round $totalMinutes) }}
+  {{ $h := div $totalMin 60 }}
+  {{ $m := mod $totalMin 60 }}
+  {{ $totalHours := "" }}
+  {{ if eq $h 0 }}
+    {{ $totalHours = printf "%dm" $m }}
+  {{ else if eq $m 0 }}
+    {{ $totalHours = printf "%dh" $h }}
+  {{ else }}
+    {{ $totalHours = printf "%dh %dm" $h $m }}
+  {{ end }}
 
   <div class="aa-gallery-page">
     {{ partial "header.html" . }}
