@@ -15,6 +15,9 @@
   --hair:    rgba(30, 30, 30, 0.09);
   --frame:   #ffffff;
   --capFg:   #E8E8E8; /* caption colour on top of images, always light */
+  /* RGB channels of --capFg so on-image overlays can compose alpha variants
+     via rgb(var(--capFg-rgb) / <alpha>) without hard-coding the hex. */
+  --capFg-rgb: 232 232 232;
   --plate-shadow: 6px 6px 0 rgba(0, 0, 0, 0.12);
   --panel-shadow: -16px 0 40px rgba(0, 0, 0, 0.16);
 }
@@ -224,7 +227,7 @@ img { display: block; max-width: 100%; height: auto; }
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(232, 232, 232, 0.75);
+  color: rgb(var(--capFg-rgb) / 0.75);
 }
 
 .aa-tile__cue {
@@ -235,9 +238,10 @@ img { display: block; max-width: 100%; height: auto; }
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  background: rgba(232, 232, 232, 0.14);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(232, 232, 232, 0.4);
+  background: rgb(var(--capFg-rgb) / 0.14);
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+  border: 1px solid rgb(var(--capFg-rgb) / 0.4);
   font-weight: 700;
   font-size: 11px;
   letter-spacing: 0.14em;
@@ -264,7 +268,7 @@ img { display: block; max-width: 100%; height: auto; }
 }
 .aa-tile:nth-child(5n+1) .aa-tile__title { font-size: 46px; }
 .aa-tile__meta {
-  color: rgba(232, 232, 232, 0.8);
+  color: rgb(var(--capFg-rgb) / 0.8);
   font-size: 12.5px;
 }
 
@@ -378,21 +382,22 @@ html[data-fit="contain"] .aa-fit-toggle__label::before { content: "Fill"; }
   font-size: 54px;
   line-height: 0.98;
   letter-spacing: -0.01em;
-  color: #E8E8E8;
+  color: var(--capFg);
 }
 .aa-view__overlay-sub {
   font-size: 13px;
   letter-spacing: 0.06em;
-  color: rgba(232, 232, 232, 0.78);
+  color: rgb(var(--capFg-rgb) / 0.78);
 }
 
 .aa-cta {
   flex: 0 0 auto;
   cursor: pointer;
-  border: 1px solid rgba(232, 232, 232, 0.6);
+  border: 1px solid rgb(var(--capFg-rgb) / 0.6);
   background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(4px);
-  color: #E8E8E8;
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+  color: var(--capFg);
   font-family: inherit;
   font-size: 12px;
   letter-spacing: 0.14em;
@@ -403,7 +408,7 @@ html[data-fit="contain"] .aa-fit-toggle__label::before { content: "Fill"; }
   gap: 11px;
   transition: background .15s, border-color .15s, color .15s;
 }
-.aa-cta:hover { background: rgba(232, 232, 232, 0.14); border-color: currentColor; }
+.aa-cta:hover { background: rgb(var(--capFg-rgb) / 0.14); border-color: currentColor; }
 
 .aa-cta--ghost {
   background: transparent;
@@ -421,10 +426,11 @@ html[data-fit="contain"] .aa-fit-toggle__label::before { content: "Fill"; }
   left: 16px;
   font-size: 11px;
   letter-spacing: 0.08em;
-  color: rgba(232, 232, 232, 0.85);
+  color: rgb(var(--capFg-rgb) / 0.85);
   background: rgba(0, 0, 0, 0.5);
   padding: 6px 11px;
-  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
 }
 
 /* Slide-in spec rail */

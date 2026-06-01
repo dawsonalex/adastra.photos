@@ -36,12 +36,18 @@
   })();
   applyTheme(stored || preferred());
 
-  // Wire the toggle once the DOM is ready.
+  // Wire the toggle once the DOM is ready. data-theme is already set (by the
+  // inline anti-flash script in head.html and the applyTheme call above), so
+  // we don't re-resolve — applyTheme below will sync button state on click.
   document.addEventListener('DOMContentLoaded', () => {
-    applyTheme(root.getAttribute('data-theme'));
-
     const btn = document.querySelector('.aa-theme-toggle');
     if (btn) {
+      // Sync button label + aria-pressed to the already-resolved theme.
+      const t = root.getAttribute('data-theme') || 'light';
+      btn.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false');
+      const lbl = btn.querySelector('.aa-theme-toggle__label');
+      if (lbl) lbl.textContent = t === 'dark' ? 'Dark' : 'Light';
+
       btn.addEventListener('click', () => {
         const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         try { localStorage.setItem(STORAGE_KEY, next); } catch (e) {}

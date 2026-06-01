@@ -57,14 +57,21 @@
     <div class="aa-grid">
       {{ range $captures }}
         {{ $thumb := path.Join .File.Dir .Params.capture_image_thumb_path | relURL }}
-        {{ $sub   := or .Params.capture_object_subtitle (index .Params.objects 0) }}
-        {{ $type  := or .Params.capture_object_type (index .Params.tags 0) | default "" }}
+        {{/* Guarded first-of: empty/nil slices would error on index. */}}
+        {{ $objs := .Params.objects | default slice }}
+        {{ $tgs  := .Params.tags    | default slice }}
+        {{ $fObj := "" }}{{ if gt (len $objs) 0 }}{{ $fObj = index $objs 0 }}{{ end }}
+        {{ $fTag := "" }}{{ if gt (len $tgs) 0 }}{{ $fTag = index $tgs  0 }}{{ end }}
+        {{ $sub   := or .Params.capture_object_subtitle $fObj }}
+        {{ $type  := or .Params.capture_object_type $fTag | default "" }}
         {{ $integ := default "" .Params.capture_integration }}
         {{ $frames := int (default 0 .Params.capture_frames) }}
         {{ $exp   := default "" .Params.capture_exposure }}
         {{ $date  := .Date | time.Format "2006.01.02" }}
 
-        <a class="aa-tile" href="{{ .RelPermalink }}" aria-label="View {{ .LinkTitle }}">
+        {{/* No aria-label on the anchor — it would override the inner title +
+             meta + type chip, which together compose a richer accessible name. */}}
+        <a class="aa-tile" href="{{ .RelPermalink }}">
           <span class="aa-tile__img" style="background-image: url('{{ $thumb }}');" role="img" aria-label="{{ .Params.capture_alt }}"></span>
           <span class="aa-tile__scrim" aria-hidden="true"></span>
           {{ with $type }}<span class="aa-tile__type">{{ . }}</span>{{ end }}

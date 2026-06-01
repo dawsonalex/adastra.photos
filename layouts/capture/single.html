@@ -4,8 +4,13 @@
        gracefully so a half-filled capture still renders.
        ---------------------------------------------------------------------- */}}
   {{ $img         := path.Join .File.Dir .Params.capture_image_path | relURL }}
-  {{ $sub         := or .Params.capture_object_subtitle (index .Params.objects 0) }}
-  {{ $type        := or .Params.capture_object_type (index .Params.tags 0) }}
+  {{/* Safe-first-of helpers: index on an empty/nil slice errors the build. */}}
+  {{ $objects     := .Params.objects | default slice }}
+  {{ $tagsList    := .Params.tags    | default slice }}
+  {{ $firstObject := "" }}{{ if gt (len $objects) 0 }}{{ $firstObject = index $objects 0 }}{{ end }}
+  {{ $firstTag    := "" }}{{ if gt (len $tagsList) 0 }}{{ $firstTag = index $tagsList 0 }}{{ end }}
+  {{ $sub         := or .Params.capture_object_subtitle $firstObject }}
+  {{ $type        := or .Params.capture_object_type $firstTag }}
   {{ $desig       := or .Params.capture_designation "—" }}
   {{ $ra          := or .Params.capture_ra_hms  "—" }}
   {{ $dec         := or .Params.capture_dec_dms "—" }}
@@ -93,7 +98,9 @@
       <div class="aa-rail__body">
         <div>
           {{ with $type }}<span class="aa-chip">{{ . }}</span>{{ end }}
-          <h1 class="aa-rail__title">{{ .Title }}</h1>
+          {{/* h2 (not h1): the overlay headline above is the page's h1 — this
+               rail headline duplicates it when the rail is open. */}}
+          <h2 class="aa-rail__title">{{ .Title }}</h2>
           <span class="aa-rail__subtitle">
             {{ with $sub }}{{ . }}{{ end }}{{ if and $sub (ne $desig "—") }} · {{ end }}{{ if ne $desig "—" }}{{ $desig }}{{ end }}
           </span>
@@ -101,7 +108,7 @@
 
         <div class="aa-stat-strip">
           <div class="aa-stat">
-            <span class="aa-stat__n">{{ if $singleFrame }}01{{ else }}{{ $integ }}{{ end }}</span>
+            <span class="aa-stat__n">{{ if $singleFrame }}—{{ else }}{{ $integ }}{{ end }}</span>
             <span class="aa-stat__label">Integration</span>
           </div>
           <div class="aa-stat">
@@ -151,18 +158,22 @@
       <div class="aa-rail__foot">
         <nav class="aa-prevnext" aria-label="Catalog navigation">
           {{ if $prev }}
+            {{ $pTags := $prev.Params.tags | default slice }}
+            {{ $pTag := "" }}{{ if gt (len $pTags) 0 }}{{ $pTag = index $pTags 0 }}{{ end }}
             <a class="aa-prevnext__cell" href="{{ $prev.RelPermalink }}">
               <span class="aa-prevnext__kicker">← Previous</span>
               <span class="aa-prevnext__name">{{ $prev.LinkTitle }}</span>
-              <span class="aa-prevnext__type">{{ or $prev.Params.capture_object_type (index $prev.Params.tags 0) }}</span>
+              <span class="aa-prevnext__type">{{ or $prev.Params.capture_object_type $pTag }}</span>
             </a>
           {{ else }}<div class="aa-prevnext__cell" aria-hidden="true"></div>{{ end }}
           <div class="aa-prevnext__sep" aria-hidden="true"></div>
           {{ if $next }}
+            {{ $nTags := $next.Params.tags | default slice }}
+            {{ $nTag := "" }}{{ if gt (len $nTags) 0 }}{{ $nTag = index $nTags 0 }}{{ end }}
             <a class="aa-prevnext__cell aa-prevnext__cell--next" href="{{ $next.RelPermalink }}">
               <span class="aa-prevnext__kicker">Next →</span>
               <span class="aa-prevnext__name">{{ $next.LinkTitle }}</span>
-              <span class="aa-prevnext__type">{{ or $next.Params.capture_object_type (index $next.Params.tags 0) }}</span>
+              <span class="aa-prevnext__type">{{ or $next.Params.capture_object_type $nTag }}</span>
             </a>
           {{ else }}<div class="aa-prevnext__cell" aria-hidden="true"></div>{{ end }}
         </nav>

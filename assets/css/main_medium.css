@@ -8,7 +8,10 @@
 
   .aa-site-header { margin-bottom: 16px; }
   .aa-wordmark    { font-size: 28px; }
-  .aa-site-nav    { display: none; } /* hamburger lives in header.html for mobile */
+  /* Nav hidden on mobile. The site currently only links to Gallery, and the
+     wordmark already points home — when About/Gear/etc. exist, replace this
+     with a hamburger menu in header.html. */
+  .aa-site-nav    { display: none; }
 
   .aa-intro {
     flex-direction: column;

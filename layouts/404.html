@@ -3,7 +3,8 @@
     {{ partial "header.html" . }}
     <section class="not-found-container">
       <span class="not-found-text">4</span>
-      <img class="not-found-image" src="{{ "img/moon.jpg" | relURL }}" alt="">
+      {{/* Moon stands in for the missing 0 in "404" — it's content, not decoration. */}}
+      <img class="not-found-image" src="{{ "img/moon.jpg" | relURL }}" alt="0">
       <span class="not-found-text">4</span>
     </section>
     <section class="not-found-text-container">
