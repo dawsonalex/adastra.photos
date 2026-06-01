@@ -1,12 +1,14 @@
 {{ define "main" }}
-    <!-- todo: This can't be accessible. Figure out how to do that -->
+  <div class="aa-page">
+    {{ partial "header.html" . }}
     <section class="not-found-container">
-        <span class="not-found-text">4</span>
-        <img class="not-found-image" src="../img/moon.jpg" alt="404">
-        <span class="not-found-text">4</span>
+      <span class="not-found-text">4</span>
+      {{/* Moon stands in for the missing 0 in "404" — it's content, not decoration. */}}
+      <img class="not-found-image" src="{{ "img/moon.jpg" | relURL }}" alt="0">
+      <span class="not-found-text">4</span>
     </section>
-
     <section class="not-found-text-container">
-        <p>Lost in (cyber)space...</p>
+      <p>Lost in (cyber)space…</p>
     </section>
+  </div>
 {{ end }}

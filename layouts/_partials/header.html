@@ -1,13 +1,14 @@
-{{ if eq .Page.Type "capture" }}
-    <div class="capture-title-container">
-        <h1 class="capture-heading">{{ .Title }}</h1>
-        <h1 class="site-title"><a href="/">{{ site.Title }}</a></h1>
-    </div>
-    <div class="capture-subheading-container">
-        <h2 class="capture-right-ascension-heading">RA, hms: {{ .Params.capture_ra_hms }}</h2>
-    </div>
-{{ else }}
-    <div class="title-container">
-        <h1 class="site-title"><a href="/">{{ site.Title }}</a></h1>
-    </div>
-{{ end }}
+{{/*
+  Reusable site header: wordmark + nav.
+  Used by the gallery (home), section, taxonomy, term, 404, and other
+  non-capture pages. The capture view page draws its own back-link header.
+*/}}
+<header class="aa-site-header">
+  <a class="aa-wordmark" href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a>
+  <nav class="aa-site-nav" aria-label="Primary">
+    <a href="{{ site.Home.RelPermalink }}"{{ if .IsHome }} aria-current="page"{{ end }}>Gallery</a>
+    {{/* Add About / Gear pages once they exist as content/about.md, content/gear.md */}}
+    {{ with .GetPage "/about" }}<a href="{{ .RelPermalink }}">About</a>{{ end }}
+    {{ with .GetPage "/gear" }}<a href="{{ .RelPermalink }}">Gear</a>{{ end }}
+  </nav>
+</header>

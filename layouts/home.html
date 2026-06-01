@@ -1,9 +1,94 @@
 {{ define "main" }}
-    {{ $captures := where site.RegularPages "Params.type" "eq" "capture" }}
-    {{ range $captures }}
-        <article class="capture-thumb-container">
-            <img fetchpriority="high" class="capture-thumb" src="{{  path.Join .File.Dir .Params.capture_image_thumb_path | relURL }}" alt="{{ .Params.capture_alt }}">
-            <h2 class="capture-heading thumb-heading"><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-        </article>
-    {{ end }}
+  {{ $captures := where site.RegularPages "Params.type" "eq" "capture" }}
+
+  {{/* ---------- aggregate stats ---------- */}}
+  {{ $totalFrames := 0 }}
+  {{ $totalMinutes := 0.0 }}
+  {{ range $captures }}
+    {{ $totalFrames = add $totalFrames (int (default 0 .Params.capture_frames)) }}
+    {{ $totalMinutes = add $totalMinutes (partial "integration-minutes.html" .) }}
+  {{ end }}
+  {{ $totalMin := int (math.Round $totalMinutes) }}
+  {{ $h := div $totalMin 60 }}
+  {{ $m := mod $totalMin 60 }}
+  {{ $totalHours := "" }}
+  {{ if eq $h 0 }}
+    {{ $totalHours = printf "%dm" $m }}
+  {{ else if eq $m 0 }}
+    {{ $totalHours = printf "%dh" $h }}
+  {{ else }}
+    {{ $totalHours = printf "%dh %dm" $h $m }}
+  {{ end }}
+
+  <div class="aa-gallery-page">
+    {{ partial "header.html" . }}
+
+    <section class="aa-intro">
+      <p class="aa-intro__bio">{{ site.Params.bio }}</p>
+      <div class="aa-intro__stats">
+        <div class="aa-stat">
+          <span class="aa-stat__n">{{ printf "%02d" (len $captures) }}</span>
+          <span class="aa-stat__label">Objects</span>
+        </div>
+        <div class="aa-stat">
+          <span class="aa-stat__n">{{ $totalHours }}</span>
+          <span class="aa-stat__label">Integrated</span>
+        </div>
+        <div class="aa-stat">
+          <span class="aa-stat__n">{{ $totalFrames }}</span>
+          <span class="aa-stat__label">Subframes</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="aa-grid">
+      {{ range $captures }}
+        {{/* Build-time thumbnails from the page bundle's full-res image.
+             Hugo caches processed outputs in resources/_gen/images/. */}}
+        {{ $orig := .Resources.GetMatch .Params.capture_image_path }}
+        {{ if not $orig }}
+          {{ errorf "capture %q: image resource %q not found in bundle" .File.Path .Params.capture_image_path }}
+        {{ end }}
+        {{ $small := $orig.Resize "400x webp q90" }}
+        {{ $med   := $orig.Resize "800x webp q90" }}
+        {{ $large := $orig.Resize "1200x webp q90" }}
+        {{/* Guarded first-of: empty/nil slices would error on index. */}}
+        {{ $objs := .Params.objects | default slice }}
+        {{ $tgs  := .Params.tags    | default slice }}
+        {{ $fObj := "" }}{{ if gt (len $objs) 0 }}{{ $fObj = index $objs 0 }}{{ end }}
+        {{ $fTag := "" }}{{ if gt (len $tgs) 0 }}{{ $fTag = index $tgs  0 }}{{ end }}
+        {{ $sub   := or .Params.capture_object_subtitle $fObj }}
+        {{ $type  := or .Params.capture_object_type $fTag | default "" }}
+        {{ $integ := partial "integration.html" . }}
+        {{ $frames := int (default 0 .Params.capture_frames) }}
+        {{ $exp   := default "" .Params.capture_exposure }}
+        {{ $date  := .Date | time.Format "2006.01.02" }}
+
+        {{/* No aria-label on the anchor — it would override the inner title +
+             meta + type chip, which together compose a richer accessible name. */}}
+        <a class="aa-tile" href="{{ .RelPermalink }}">
+          <img class="aa-tile__img"
+               src="{{ $med.RelPermalink }}"
+               srcset="{{ $small.RelPermalink }} 400w, {{ $med.RelPermalink }} 800w, {{ $large.RelPermalink }} 1200w"
+               sizes="(min-width: 1200px) 800px, 50vw"
+               width="{{ $med.Width }}" height="{{ $med.Height }}"
+               alt="{{ .Params.capture_alt }}"
+               loading="lazy" decoding="async">
+          <span class="aa-tile__scrim" aria-hidden="true"></span>
+          {{ with $type }}<span class="aa-tile__type">{{ . }}</span>{{ end }}
+          <span class="aa-tile__cue" aria-hidden="true">View <span>→</span></span>
+          <span class="aa-tile__body">
+            <h2 class="aa-tile__title">{{ .LinkTitle }}</h2>
+            <span class="aa-tile__meta aa-meta">
+              {{ with $sub }}<span>{{ . }}</span>{{ end }}
+              {{ if and (gt $frames 1) $integ }}
+                <span class="aa-meta__sep">/</span><span>{{ $integ }} integration</span>
+                <span class="aa-meta__sep">/</span><span>{{ $frames }} frames</span>
+              {{ end }}
+            </span>
+          </span>
+        </a>
+      {{ end }}
+    </div>
+  </div>
 {{ end }}

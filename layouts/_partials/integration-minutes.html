@@ -1,0 +1,23 @@
+{{/* Returns integration time in minutes (float) for a capture.
+
+     Resolution order:
+       1. Explicit `capture_integration_minutes` numeric override.
+       2. Computed from frames × exposure when exposure is "Ns" form
+          (including single-frame captures).
+       3. 0.0 if none of the above can be derived.
+
+     Aggregate stats use this; tile/single-view displays use the
+     companion `integration.html` partial for a formatted string.
+*/ -}}
+{{ $mins := 0.0 -}}
+{{ with .Params.capture_integration_minutes -}}
+  {{ $mins = float . -}}
+{{ else -}}
+  {{ $frames := int (default 0 .Params.capture_frames) -}}
+  {{ $exp := default "" .Params.capture_exposure -}}
+  {{ if and (gt $frames 0) (hasSuffix $exp "s") (not (in $exp "/")) -}}
+    {{ $secs := float (strings.TrimSuffix "s" $exp) -}}
+    {{ $mins = div (mul $secs (float $frames)) 60.0 -}}
+  {{ end -}}
+{{ end -}}
+{{ return $mins -}}

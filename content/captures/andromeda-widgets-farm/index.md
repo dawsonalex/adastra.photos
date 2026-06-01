@@ -8,12 +8,13 @@ tags = ['']
 
 # Capture specific fields
 capture_image_path = 'andromeda.webp'
-capture_image_thumb_path = 'andromeda_thumb.jpg'
+capture_object_type = 'Spiral Galaxy'
 capture_location = 'Widgets Farm, Frome'
 capture_date = 'August 27, 2025'
 capture_camera = 'Canon EOS 550D'
+capture_optics = 'Carl Zeiss 135mm f/3.5'
 capture_frames = 44
-capture_exposure = '120'
+capture_exposure = '120s'
 capture_iso = 200
 capture_f_number = 3.5
 capture_mount = 'SkyWatcher Sky Adventurer 2i EQ'

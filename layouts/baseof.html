@@ -1,14 +1,23 @@
 <!DOCTYPE html>
-<html lang="{{ site.Language.LanguageCode }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
+<html lang="{{ site.Language.LanguageCode }}" dir="{{ or site.Language.LanguageDirection `ltr` }}"{{ with .Params.capture_default_fit }} data-fit="{{ . }}"{{ end }}>
 <head>
   {{ partial "head.html" . }}
 </head>
 <body>
-  <header>
-    {{ partial "header.html" . }}
-  </header>
+  {{/*
+    The site header is partial-included on pages that need it. The capture
+    (view) page draws its own back-link header inside the layout, so we don't
+    auto-emit one here. Each block below opts in.
+  */}}
   <main>
     {{ block "main" . }}{{ end }}
   </main>
+
+  <button class="aa-theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+    <span class="aa-theme-toggle__dot" aria-hidden="true"></span>
+    <span class="aa-theme-toggle__label">Light</span>
+  </button>
+
+  {{ partial "head/js.html" . }}
 </body>
 </html>

@@ -1,205 +1,667 @@
+/* =============================================================================
+   Ad Astra — design tokens
+   Light is default. The theme toggle (assets/js/main.js) flips
+   data-theme="dark" on <html>. prefers-color-scheme is honoured before the
+   user has expressed a preference (see main.js).
+   ========================================================================== */
+
 :root {
-  --primary-font-color: #1E1E1E;
-  --capture-thumb-font-color: #E8E8E8;
-  --background-color: #E8E8E8;
+  --bg:      #E8E8E8;
+  --bg2:     #dedede;
+  --fg:      #1E1E1E;
+  --sub:     rgba(30, 30, 30, 0.55);
+  --faint:   rgba(30, 30, 30, 0.35);
+  --line:    rgba(30, 30, 30, 0.16);
+  --hair:    rgba(30, 30, 30, 0.09);
+  --frame:   #ffffff;
+  --capFg:   #E8E8E8; /* caption colour on top of images, always light */
+  /* RGB channels of --capFg so on-image overlays can compose alpha variants
+     via rgb(var(--capFg-rgb) / <alpha>) without hard-coding the hex. */
+  --capFg-rgb: 232 232 232;
+  --plate-shadow: 6px 6px 0 rgba(0, 0, 0, 0.12);
+  --panel-shadow: -16px 0 40px rgba(0, 0, 0, 0.16);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-font-color: #E8E8E8;
-    --background-color: #1E1E1E;
-  }
+html[data-theme="dark"] {
+  --bg:      #1E1E1E;
+  --bg2:     #262626;
+  --fg:      #E8E8E8;
+  --sub:     rgba(232, 232, 232, 0.55);
+  --faint:   rgba(232, 232, 232, 0.32);
+  --line:    rgba(232, 232, 232, 0.16);
+  --hair:    rgba(232, 232, 232, 0.09);
+  --frame:   #0d0d0d;
+  --plate-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  --panel-shadow: -22px 0 50px rgba(0, 0, 0, 0.5);
 }
 
-* {
-  box-sizing: border-box;
-}
+/* =============================================================================
+   Base
+   ========================================================================== */
 
-html {
-  scroll-behavior: smooth;
-}
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  color: var(--primary-font-color);
-  font-family: "JetBrains Mono", monospace;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
   line-height: 1.5;
-
-  background-color: var(--background-color);
+  -webkit-font-smoothing: antialiased;
 }
 
-.site-title {
-  text-align: end;
-  margin: 0;
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: none; }
 
+img { display: block; max-width: 100%; height: auto; }
+
+/* =============================================================================
+   Reusable atoms
+   ========================================================================== */
+
+.aa-wordmark {
   font-family: "Major Mono", monospace;
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--fg);
 }
+.aa-wordmark--sm { font-size: 28px; }
+.aa-wordmark--xs { font-size: 22px; }
 
-footer {
-  border-top: 1px solid var(--primary-font-color);
-  margin-top: 1rem;
-}
-
-a {
-  color: var(--primary-font-color);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-.capture-title-container, .title-container {
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: self-start;
-  justify-content: space-between;
-
-  padding: 16px;
-}
-
-.capture-heading {
-  margin: 0;
-  font-family: "Bruno Ace SC", sans-serif;
-}
-
-.capture-container {
-  margin: 2em;
-  padding: 1em;
-  background-color: #fefefe;
-}
-
-.thumb-heading > a {
-  color: var(--capture-thumb-font-color);
-}
-
-.capture-subheading-container {
-  padding: 0 16px 16px;
-}
-
-.capture-subheading-container > * {
-  margin: 0;
-}
-
-.capture-right-ascension-heading {
-  font-family: "JetBrains Mono", monospace;
-  font-weight: 500;
-}
-
-.capture-image {
-  max-width: 100%;
-  height: auto;
-}
-
-main .capture-thumb-container:not(:first-child) {
-  margin-top: -14px;
-}
-
-main .capture-thumb-container:last-child {
-  margin-bottom: -14px;
-}
-
-.capture-thumb-container {
-  position: relative;
-  max-height: 160px;
-  overflow: hidden;
-}
-
-.capture-thumb-container img {
-  width: 100%;
-  max-height: inherit;
-  position: relative;
-
+.aa-kicker {
   display: block;
-  object-fit: cover;
-  object-position: center;
+  font-size: 11.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sub);
 }
 
-.capture-thumb-container .thumb-heading {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  margin: 0;
-  padding: 4px;
+.aa-chip {
+  display: inline-block;
+  padding: 7px 14px;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+  white-space: nowrap;
 }
 
-.capture-details-container {
+.aa-meta {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  margin: 0 auto;
-  width: 90%;
-}
-
-.capture-details {
-  display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-
-  width: 100%;
-  margin: 0 auto;
+  gap: 10px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.aa-meta__sep {
+  opacity: 0.4;
 }
 
-.capture-detail {
+/* =============================================================================
+   Site header — shown on gallery + secondary pages (NOT on capture view, which
+   has its own back-link header)
+   ========================================================================== */
+
+.aa-site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.aa-site-nav {
+  display: flex;
+  gap: 26px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sub);
+}
+.aa-site-nav a { color: var(--sub); }
+.aa-site-nav a[aria-current="page"],
+.aa-site-nav a.is-active { color: var(--fg); }
+
+/* =============================================================================
+   Gallery — DirB editorial tiles
+   ========================================================================== */
+
+.aa-gallery-page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 40px 40px 60px;
+}
+
+.aa-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+.aa-intro__bio {
+  max-width: 560px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.aa-intro__stats {
+  display: flex;
+  gap: 40px;
+  flex-shrink: 0;
+}
+
+.aa-stat {
   display: flex;
   flex-direction: column;
-
-  margin: 16px 32px 16px 0;
+  gap: 9px;
+}
+.aa-stat__n {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.aa-stat__label {
+  font-size: 11.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sub);
 }
 
-.capture-detail-title {
-  font-family: "JetBrains Mono", monospace;
-  font-weight: 300;
-  text-wrap: nowrap;
+/* Tile grid. 6-column track. Every 5 tiles repeats this rhythm:
+   #1  span 4  (featured)   #2  span 2  (paired)
+   #3  span 2  #4  span 2  #5  span 2 (triplet)
+*/
+.aa-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
 }
 
-.capture-detail-value {
-  font-family: "JetBrains Mono", monospace;
-  font-weight: normal;
-  text-wrap: nowrap;
+.aa-tile {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #000;
+  cursor: pointer;
+  color: var(--capFg);
+  grid-column: span 2;
+  aspect-ratio: 3 / 2;
+}
+.aa-tile:nth-child(5n+1) { grid-column: span 4; aspect-ratio: 23 / 13; }
+.aa-tile:nth-child(5n+2) { grid-column: span 2; aspect-ratio: 23 / 13; }
+
+.aa-tile__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform .5s cubic-bezier(.2, .7, .3, 1);
+}
+.aa-tile:hover .aa-tile__img { transform: scale(1.05); }
+
+.aa-tile__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+              rgba(0,0,0,0.05) 0%,
+              rgba(0,0,0,0)    40%,
+              rgba(0,0,0,0.55) 82%,
+              rgba(0,0,0,0.8)  100%);
+}
+
+.aa-tile__type {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(var(--capFg-rgb) / 0.75);
+}
+
+.aa-tile__cue {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgb(var(--capFg-rgb) / 0.14);
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+  border: 1px solid rgb(var(--capFg-rgb) / 0.4);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--capFg);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity .2s, transform .2s;
+}
+.aa-tile:hover .aa-tile__cue,
+.aa-tile:focus-visible .aa-tile__cue { opacity: 1; transform: translateY(0); }
+
+.aa-tile__body {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 22px 22px 20px;
+}
+.aa-tile__title {
+  margin: 0 0 9px;
+  font-family: "Bruno Ace SC", sans-serif;
+  font-size: 30px;
+  line-height: 1.04;
+  color: var(--capFg);
+}
+.aa-tile:nth-child(5n+1) .aa-tile__title { font-size: 46px; }
+.aa-tile__meta {
+  color: rgb(var(--capFg-rgb) / 0.8);
+  font-size: 12.5px;
+}
+
+/* =============================================================================
+   Capture / view page — V2 Split Plate
+   ========================================================================== */
+
+.aa-view {
+  position: relative;
+  height: 100vh;
+  min-height: 720px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.aa-view__plate {
+  position: absolute;
+  inset: 0;
+  padding: 34px 44px;
+  display: flex;
+  flex-direction: column;
+}
+
+.aa-view__chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.aa-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sub);
+  transition: color .15s;
+}
+.aa-back__arrow {
+  display: inline-block;
+  transition: transform .18s;
+}
+.aa-back:hover .aa-back__arrow { transform: translateX(-4px); }
+.aa-back:hover { color: var(--fg); }
+
+.aa-view__image {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background-color: #000;
+  overflow: hidden;
+  box-shadow: var(--plate-shadow);
+  transition: box-shadow .55s cubic-bezier(.4, 0, .2, 1);
+}
+.aa-view__image-el {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Default to cover (fill the plate) so first paint is correct without
+     waiting on JS to measure the image. Toggling to contain snaps —
+     object-fit isn't animatable, but that's a fair trade for never
+     showing the wrong state on load. */
+  object-fit: cover;
+  display: block;
+}
+html[data-fit="contain"] .aa-view__image-el { object-fit: contain; }
+html[data-fit="contain"] .aa-view__image    { box-shadow: none; }
+html[data-theme="dark"] .aa-view__image { box-shadow: none; }
+
+/* Fit/Fill toggle — floats top-right of the image plate.
+   We always render both icons; CSS shows the one that matches the
+   "next" action (the icon hints at where clicking will take you). */
+.aa-fit-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  padding: 8px 12px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+/* Default state = cover, so the "fit" icon (the action you'd take next)
+   shows without needing a data-fit attribute on <html>. JS sets
+   data-fit="contain" on toggle to swap to the "fill" icon. */
+.aa-fit-toggle__icon { display: none; }
+.aa-fit-toggle__icon--fit { display: block; }
+html[data-fit="contain"] .aa-fit-toggle__icon--fit  { display: none; }
+html[data-fit="contain"] .aa-fit-toggle__icon--fill { display: block; }
+
+.aa-fit-toggle__label::before { content: "Fit"; }
+html[data-fit="contain"] .aa-fit-toggle__label::before { content: "Fill"; }
+
+.aa-view__overlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 90px 28px 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  background: linear-gradient(to top,
+              rgba(0, 0, 0, 0.78) 0%,
+              rgba(0, 0, 0, 0)   70%);
+}
+.aa-view__overlay h1 {
+  margin: 0 0 8px;
+  font-family: "Bruno Ace SC", sans-serif;
+  font-size: 54px;
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+  color: var(--capFg);
+}
+.aa-view__overlay-sub {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: rgb(var(--capFg-rgb) / 0.78);
+}
+
+.aa-cta {
+  flex: 0 0 auto;
+  cursor: pointer;
+  border: 1px solid rgb(var(--capFg-rgb) / 0.6);
+  background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+  color: var(--capFg);
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 13px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.aa-cta:hover { background: rgb(var(--capFg-rgb) / 0.14); border-color: currentColor; }
+
+.aa-cta--ghost {
+  background: transparent;
+  color: var(--sub);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+}
+.aa-cta--ghost:hover { color: var(--fg); }
+
+.aa-view__corner-caption {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgb(var(--capFg-rgb) / 0.85);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 6px 11px;
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+}
+
+/* Slide-in spec rail */
+.aa-rail {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(470px, 92vw);
+  background: var(--bg2);
+  border-left: 1px solid var(--line);
+  transform: translateX(100%);
+  transition: transform .42s cubic-bezier(.4, 0, .2, 1), box-shadow .42s;
+  display: flex;
+  flex-direction: column;
+  /* Sits above the fit toggle (z-index: 2) so the toggle slides under
+     the rail rather than alongside it when the rail opens. */
+  z-index: 3;
+}
+.aa-view[data-rail-open="true"] .aa-rail {
+  transform: translateX(0);
+  box-shadow: var(--panel-shadow);
+}
+
+/* When the rail is open we hide the on-image overlay so the headline doesn't
+   double-up with the rail's headline. */
+.aa-view[data-rail-open="true"] .aa-view__overlay { display: none; }
+.aa-view[data-rail-open="false"] .aa-view__corner-caption { display: none; }
+
+.aa-rail__head {
+  flex: 0 0 auto;
+  padding: 34px 44px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.aa-rail__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 44px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.aa-rail__foot {
+  flex: 0 0 auto;
+  padding: 0 44px 34px;
+  background: var(--bg2);
+  box-shadow: 0 -22px 22px -8px var(--bg2);
+}
+
+.aa-rail__title {
+  margin: 16px 0 6px;
+  font-family: "Bruno Ace SC", sans-serif;
+  font-size: 46px;
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.aa-rail__subtitle {
+  font-size: 13.5px;
+  color: var(--sub);
+}
+
+/* Stat strip inside the rail */
+.aa-stat-strip {
+  display: flex;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 20px 0;
+}
+.aa-stat-strip .aa-stat { padding: 0 36px 0 0; }
+.aa-stat-strip .aa-stat + .aa-stat {
+  padding: 0 36px;
+  border-left: 1px solid var(--line);
+}
+.aa-stat-strip .aa-stat:last-child { padding: 0 0 0 36px; }
+.aa-stat-strip .aa-stat__n { font-size: 34px; }
+.aa-stat-strip .aa-stat__label { font-size: 10.5px; }
+
+/* Spec groups */
+.aa-spec-group + .aa-spec-group { margin-top: 0; }
+.aa-spec-group .aa-kicker { margin-bottom: 2px; }
+.aa-drow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 18px;
+  padding: 11px 0;
+  border-top: 1px solid var(--hair);
+}
+.aa-drow__k {
+  flex: 0 0 108px;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.aa-drow__v {
+  flex: 1;
+  font-size: 12.5px;
+  text-align: right;
+  color: var(--fg);
+}
+
+.aa-notes p {
   margin: 0;
+  font-size: 13.5px;
+  line-height: 1.72;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+.aa-notes p + p { margin-top: 16px; color: var(--sub); }
+
+/* Prev / next */
+.aa-prevnext {
+  display: flex;
+  gap: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 26px;
+}
+.aa-prevnext__sep {
+  width: 1px;
+  flex: 0 0 1px;
+  background: var(--line);
+}
+.aa-prevnext__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  transition: opacity .15s;
+}
+.aa-prevnext__cell:hover { opacity: 0.62; }
+.aa-prevnext__cell--next { text-align: right; }
+.aa-prevnext__kicker {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.aa-prevnext__name {
+  font-family: "Bruno Ace SC", sans-serif;
+  font-size: 17px;
+  color: var(--fg);
+}
+.aa-prevnext__type {
+  font-size: 11.5px;
+  color: var(--sub);
 }
 
-.capture-details-container > hr {
-  width: 100%;
+/* =============================================================================
+   Theme toggle (floating, bottom-right on every page)
+   ========================================================================== */
+
+.aa-theme-toggle {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  z-index: 50;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  background: var(--bg2);
+  color: var(--sub);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.aa-theme-toggle__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--fg);
 }
 
-.capture-description {
-  width: 100%;
+/* =============================================================================
+   Section / taxonomy / 404 — light pass to inherit tokens
+   ========================================================================== */
+
+.aa-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 40px 80px;
 }
+.aa-page h1 {
+  font-family: "Bruno Ace SC", sans-serif;
+  font-size: 42px;
+  margin: 0 0 24px;
+  color: var(--fg);
+}
+.aa-page time {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sub);
+  margin-bottom: 28px;
+}
+.aa-page article + article { margin-top: 20px; }
 
 .not-found-container {
   display: flex;
   align-items: center;
   justify-content: center;
-
   overflow: hidden;
   font-size: 10rem;
   margin-top: 32px;
+  font-family: "Major Mono", monospace;
+  color: var(--fg);
 }
-
-.not-found-text {
-  font-size: 1em;
-  line-height: 1em;
-}
-
+.not-found-text { font-size: 1em; line-height: 1em; }
 .not-found-image {
   max-width: 1em;
   mask-image: radial-gradient(black 50%, transparent 60%);
 }
-
 .not-found-text-container {
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 2rem;
-
   padding: 24px;
+  color: var(--fg);
 }
-
-.not-found-text-container > * {
-  margin: 0;
-}
+.not-found-text-container > * { margin: 0; }

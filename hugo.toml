@@ -3,6 +3,21 @@ languageCode = 'en-US'
 title = 'Ad Astra'
 
 [params]
+    # Shown on the gallery hero. Keep this short — one or two sentences.
+#    bio = 'Backyard deep-sky photography from a Bortle 6 sky — one DSLR, one tracker, a great deal of patience.'
+
+    # Default Bortle reading shown in the "Sky" row when a capture omits its own.
+    defaultBortleScale = 6
+
+    # Gear constants. Per-capture front matter (capture_camera, capture_mount)
+    # overrides these.
+    [params.gear]
+        camera = 'Canon EOS 550D'
+        mount  = 'SkyWatcher Star Adventurer 2i EQ'
+        optics = 'Carl Zeiss 135mm f/3.5'
+
+    # Order in which acquisition details render on a capture page. Each inner
+    # list is one visual group (rendered as a key/value table with a heading).
     captureDetailKeys = [
         [
             "date",
