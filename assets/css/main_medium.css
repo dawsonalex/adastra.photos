@@ -56,11 +56,11 @@
   }
   .aa-view__image-el {
     inset: 0;
+    /* Mobile always shows cover within the 3:2 frame, regardless of
+       html[data-fit] — the toggle is hidden anyway. */
     object-fit: cover;
-    /* On mobile we always want cover within the 3:2 frame — the JS-computed
-       scale doesn't apply. */
-    transform: none;
   }
+  html[data-fit="contain"] .aa-view__image-el { object-fit: cover; }
   html[data-theme="dark"] .aa-view__image {
     border: 10px solid var(--frame);
     box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);

@@ -326,14 +326,15 @@ img { display: block; max-width: 100%; height: auto; }
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  /* Default to cover (fill the plate) so first paint is correct without
+     waiting on JS to measure the image. Toggling to contain snaps —
+     object-fit isn't animatable, but that's a fair trade for never
+     showing the wrong state on load. */
+  object-fit: cover;
   display: block;
-  transform: scale(var(--cover-scale, 1));
-  transform-origin: center center;
-  transition: transform .55s cubic-bezier(.4, 0, .2, 1);
 }
-.aa-view[data-fit="contain"] .aa-view__image-el { transform: scale(1); }
-.aa-view[data-fit="contain"] .aa-view__image    { box-shadow: none; }
+html[data-fit="contain"] .aa-view__image-el { object-fit: contain; }
+html[data-fit="contain"] .aa-view__image    { box-shadow: none; }
 html[data-theme="dark"] .aa-view__image { box-shadow: none; }
 
 /* Fit/Fill toggle — floats top-right of the image plate.
@@ -349,14 +350,13 @@ html[data-theme="dark"] .aa-view__image { box-shadow: none; }
   letter-spacing: 0.14em;
 }
 .aa-fit-toggle__icon { display: none; }
-.aa-view[data-fit="cover"]   .aa-fit-toggle__icon--fit  { display: block; }
-.aa-view[data-fit="contain"] .aa-fit-toggle__icon--fill { display: block; }
+html[data-fit="cover"]   .aa-fit-toggle__icon--fit  { display: block; }
+html[data-fit="contain"] .aa-fit-toggle__icon--fill { display: block; }
 
-/* When the rail is open, slide the toggle left so it stays visible next to
-   the rail's edge instead of disappearing behind it. */
-.aa-view[data-rail-open="true"] .aa-fit-toggle {
-  right: calc(min(470px, 92vw) + 16px);
-}
+/* Label text is CSS-driven so the pre-paint data-fit attribute on <html>
+   determines what the user sees on first paint — no DOM-update flicker. */
+.aa-fit-toggle__label::before { content: "Fit"; }
+html[data-fit="contain"] .aa-fit-toggle__label::before { content: "Fill"; }
 
 .aa-view__overlay {
   position: absolute;
@@ -438,6 +438,9 @@ html[data-theme="dark"] .aa-view__image { box-shadow: none; }
   transition: transform .42s cubic-bezier(.4, 0, .2, 1), box-shadow .42s;
   display: flex;
   flex-direction: column;
+  /* Sits above the fit toggle (z-index: 2) so the toggle slides under
+     the rail rather than alongside it when the rail opens. */
+  z-index: 3;
 }
 .aa-view[data-rail-open="true"] .aa-rail {
   transform: translateX(0);

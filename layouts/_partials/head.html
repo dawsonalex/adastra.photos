@@ -21,5 +21,19 @@
   })();
 </script>
 
+{{/* Same pre-paint trick for the capture-page image fit mode — sets
+     data-fit on <html> so the capture section's computed styles are
+     correct on first style resolution, with no transform-transition flash. */}}
+<script>
+  (function () {
+    try {
+      var f = localStorage.getItem('aa_image_fit');
+      document.documentElement.setAttribute('data-fit', f === 'contain' ? 'contain' : 'cover');
+    } catch (e) {
+      document.documentElement.setAttribute('data-fit', 'cover');
+    }
+  })();
+</script>
+
 {{ partial "head/css.html" . }}
 {{ partial "head/fonts.html" . }}
