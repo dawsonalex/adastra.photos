@@ -2,5 +2,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1.0, width=device-width">
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}</title>
+<link rel="icon" href="{{ "favicon.ico" | relURL }}">
+
+{{/* Prevent dark/light flash before main.js runs by resolving the theme inline. */}}
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('aa_theme');
+      if (!t) {
+        t = window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  })();
+</script>
+
 {{ partial "head/css.html" . }}
 {{ partial "head/fonts.html" . }}

@@ -1,62 +1,104 @@
-@media screen and (min-width: 768px) {
-  header {
-    padding: 0 62px;
-  }
+/* =============================================================================
+   Ad Astra — small viewport (< 768px) overrides
+   ========================================================================== */
 
-  .capture-title-container, .title-container {
-    flex-direction: row;
-    align-items: center;
-    justify-content: end;
+@media (max-width: 767px) {
+  /* Gallery */
+  .aa-gallery-page { padding: 22px 14px 40px; }
 
-    padding-left: 0;
-    padding-right: 0;
-  }
+  .aa-site-header { margin-bottom: 16px; }
+  .aa-wordmark    { font-size: 28px; }
+  .aa-site-nav    { display: none; } /* hamburger lives in header.html for mobile */
 
-  .capture-title-container {
-    justify-content: space-between;
-  }
-
-  .capture-heading {
-    margin: 0 62px 0 0;
-  }
-
-  .capture-thumb-container {
-    font-size: xx-large;
-
-    max-height: 400px;
-  }
-
-  .capture-subheading-container {
-    padding: 0;
-  }
-
-  .capture-right-ascension-heading {
-    margin: 0 62px 16px 0;
-  }
-
-  .capture-details-container {
-    display: flex;
+  .aa-intro {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    gap: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    margin-bottom: 14px;
+  }
+  .aa-intro__bio   { font-size: 13px; }
+  .aa-intro__stats { justify-content: space-between; gap: 0; }
+  .aa-stat__n      { font-size: 24px; }
 
+  /* All tiles full-width on mobile, uniform aspect */
+  .aa-grid               { grid-template-columns: 1fr; gap: 12px; }
+  .aa-tile               { grid-column: span 1; aspect-ratio: 3 / 2; }
+  .aa-tile:nth-child(5n+1) { grid-column: span 1; aspect-ratio: 13 / 10; }
+  .aa-tile:nth-child(5n+2) { grid-column: span 1; aspect-ratio: 3 / 2; }
+  .aa-tile__title          { font-size: 28px; }
+  .aa-tile:nth-child(5n+1) .aa-tile__title { font-size: 34px; }
+  .aa-tile__cue { opacity: 1; transform: none; } /* always visible on touch */
+
+  /* View page — stacked mobile layout */
+  .aa-view {
+    position: static;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .aa-view__plate {
+    position: static;
+    padding: 18px 16px 0;
+    inset: auto;
+  }
+  .aa-view__chrome { margin-bottom: 16px; }
+  .aa-wordmark--header-sm { font-size: 22px; }
+
+  .aa-view__image {
+    aspect-ratio: 3 / 2;
+    flex: 0 0 auto;
+    min-height: 0;
+    background-color: var(--frame);
+    background-size: cover;
+    border: 10px solid var(--frame);
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.12);
+  }
+  html[data-theme="dark"] .aa-view__image {
+    border: 10px solid var(--frame);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+  }
+
+  /* On mobile the overlay collapses — title/sub move below the image. */
+  .aa-view__overlay,
+  .aa-view__corner-caption { display: none; }
+
+  /* The rail becomes the document flow */
+  .aa-rail {
+    position: static;
     width: 100%;
-    margin: 0;
-    padding: 0 240px;
+    height: auto;
+    transform: none;
+    box-shadow: none;
+    border-left: none;
+    background: var(--bg);
   }
+  .aa-view[data-rail-open] .aa-rail { transform: none; box-shadow: none; }
+  .aa-view[data-rail-open] .aa-view__overlay { display: none; }
 
-  .capture-details {
-    justify-content: start;
-  }
+  .aa-rail__head   { display: none; } /* header already shown above the image */
+  .aa-rail__body   { padding: 20px 16px 4px; gap: 22px; overflow: visible; }
+  .aa-rail__foot   { padding: 0 16px 40px; background: var(--bg); box-shadow: none; }
 
-  .not-found-container {
-    font-size: 40rem;
-  }
+  .aa-rail__title  { font-size: 34px; }
+  .aa-stat-strip .aa-stat__n     { font-size: 24px; }
+  .aa-stat-strip .aa-stat__label { font-size: 10px; }
+  .aa-stat-strip .aa-stat        { padding: 0 12px 0 0; }
+  .aa-stat-strip .aa-stat + .aa-stat { padding: 0 12px; }
+  .aa-stat-strip .aa-stat:last-child { padding: 0 0 0 12px; }
+}
 
-  .not-found-text {
-    font-size: 1em;
-  }
+/* =============================================================================
+   Medium / tablet polish (768 – 1023px)
+   ========================================================================== */
 
-  .not-found-text-container {
-    font-size: 4rem;
-  }
+@media (min-width: 768px) and (max-width: 1023px) {
+  .aa-gallery-page { padding: 32px 28px 50px; }
+  .aa-grid { grid-template-columns: repeat(4, 1fr); }
+  .aa-tile                 { grid-column: span 2; aspect-ratio: 3 / 2; }
+  .aa-tile:nth-child(5n+1) { grid-column: span 4; aspect-ratio: 16 / 9; }
+  .aa-tile:nth-child(5n+2) { grid-column: span 2; aspect-ratio: 3 / 2; }
+
+  .aa-rail { width: min(420px, 50vw); }
 }

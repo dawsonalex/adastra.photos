@@ -1,27 +1,151 @@
 {{ define "main" }}
-    <section class="capture-container">
-        <img class="capture-image" src="{{  path.Join .File.Dir .Params.capture_image_path | relURL }}" alt="{{ .Params.capture_alt }}">
-    </section>
-    <section class="capture-details-container">
-        <article class="capture-description">
-            {{ .Content }}
-        </article>
-        <hr/>
-        <article class="capture-details">
+  {{/* ----------------------------------------------------------------------
+       Derive display values. Front matter may omit some fields; we fall back
+       gracefully so a half-filled capture still renders.
+       ---------------------------------------------------------------------- */}}
+  {{ $img         := path.Join .File.Dir .Params.capture_image_path | relURL }}
+  {{ $sub         := or .Params.capture_object_subtitle (index .Params.objects 0) }}
+  {{ $type        := or .Params.capture_object_type (index .Params.tags 0) }}
+  {{ $desig       := or .Params.capture_designation "—" }}
+  {{ $ra          := or .Params.capture_ra_hms  "—" }}
+  {{ $dec         := or .Params.capture_dec_dms "—" }}
+  {{ $integ       := or .Params.capture_integration "—" }}
+  {{ $frames      := int (default 0 .Params.capture_frames) }}
+  {{ $exp         := or .Params.capture_exposure "—" }}
+  {{ $iso         := or .Params.capture_iso "—" }}
+  {{ $fnum        := or .Params.capture_f_number "—" }}
+  {{ $focal       := or .Params.capture_focal_length "" }}
+  {{ $camera      := or .Params.capture_camera site.Params.gear.camera }}
+  {{ $mount       := or .Params.capture_mount  site.Params.gear.mount }}
+  {{ $optics      := or .Params.capture_optics site.Params.gear.optics }}
+  {{ $location    := or .Params.capture_location "" }}
+  {{ $bortle      := or .Params.capture_bortle_scale site.Params.defaultBortleScale }}
 
-            {{/* Iterate of site.params.captureDetailKeys to preserve order of randered details */}}
-            {{ range $detailGroup := .Site.Params.captureDetailKeys }}
-                {{ range $key := . }}
-                    {{ $key = printf "capture_%s" $key }}
-                    {{ $value := index $.Params $key }}
-                    {{ if and (ne $value "")  (hasPrefix $key "capture_") }}
-                        <div class="capture-detail">
-                            <div class="capture-detail-title">{{ humanize (strings.TrimPrefix "capture_" $key) }}</div><div class="capture-detail-value">{{ $value }}</div>
-                        </div>
-                    {{ end }}
-                {{ end }}
+  {{ $singleFrame := eq $integ "—" }}
+  {{ $prev := .PrevInSection }}
+  {{ $next := .NextInSection }}
 
-            {{ end }}
-        </article>
-    </section>
+  <section class="aa-view" data-rail-open="false" aria-label="Capture detail">
+
+    {{/* ---------------- Image plate (always rendered) ---------------- */}}
+    <div class="aa-view__plate">
+      <div class="aa-view__chrome">
+        <a class="aa-back" href="{{ site.Home.RelPermalink }}">
+          <span class="aa-back__arrow" aria-hidden="true">←</span> Catalog
+        </a>
+        <a class="aa-wordmark aa-wordmark--sm aa-wordmark--header-sm" href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a>
+      </div>
+
+      <div class="aa-view__image" style="background-image: url('{{ $img }}');" role="img" aria-label="{{ .Params.capture_alt }}">
+        {{/* Closed-state overlay: object name + ra/dec + open-rail CTA. */}}
+        <div class="aa-view__overlay">
+          <div>
+            <h1>{{ .Title }}</h1>
+            <span class="aa-view__overlay-sub">
+              {{ with $sub }}{{ . }} · {{ end }}RA {{ $ra }} · DEC {{ $dec }}
+            </span>
+          </div>
+          <button type="button" class="aa-cta" data-rail-open-btn>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect x="1.6" y="1.6" width="12.8" height="12.8" stroke="currentColor" stroke-width="1.2"/>
+              <line x1="4.2" y1="5.6"  x2="11.8" y2="5.6"  stroke="currentColor" stroke-width="1.2"/>
+              <line x1="4.2" y1="8.0"  x2="11.8" y2="8.0"  stroke="currentColor" stroke-width="1.2"/>
+              <line x1="4.2" y1="10.4" x2="8.6"  y2="10.4" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+            Acquisition Data
+          </button>
+        </div>
+
+        {{/* Open-state corner caption (hidden when rail is closed; CSS handles it). */}}
+        <span class="aa-view__corner-caption">RA {{ $ra }} · DEC {{ $dec }}</span>
+      </div>
+    </div>
+
+    {{/* ---------------- Slide-in spec rail ---------------- */}}
+    <aside class="aa-rail" aria-label="Acquisition data">
+      <div class="aa-rail__head">
+        <a class="aa-wordmark aa-wordmark--sm" href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a>
+        <button type="button" class="aa-cta aa-cta--ghost" data-rail-close-btn>Hide <span aria-hidden="true">→</span></button>
+      </div>
+
+      <div class="aa-rail__body">
+        <div>
+          {{ with $type }}<span class="aa-chip">{{ . }}</span>{{ end }}
+          <h1 class="aa-rail__title">{{ .Title }}</h1>
+          <span class="aa-rail__subtitle">
+            {{ with $sub }}{{ . }}{{ end }}{{ if and $sub (ne $desig "—") }} · {{ end }}{{ if ne $desig "—" }}{{ $desig }}{{ end }}
+          </span>
+        </div>
+
+        <div class="aa-stat-strip">
+          <div class="aa-stat">
+            <span class="aa-stat__n">{{ if $singleFrame }}01{{ else }}{{ $integ }}{{ end }}</span>
+            <span class="aa-stat__label">Integration</span>
+          </div>
+          <div class="aa-stat">
+            <span class="aa-stat__n">{{ if $singleFrame }}1{{ else }}{{ $frames }}{{ end }}</span>
+            <span class="aa-stat__label">Subframes</span>
+          </div>
+          <div class="aa-stat">
+            <span class="aa-stat__n">{{ $exp }}</span>
+            <span class="aa-stat__label">Exposure</span>
+          </div>
+        </div>
+
+        <section class="aa-spec-group">
+          <span class="aa-kicker">Coordinates</span>
+          <div class="aa-drow"><span class="aa-drow__k">Right Ascension</span><span class="aa-drow__v">{{ $ra }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">Declination</span><span class="aa-drow__v">{{ $dec }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">Designation</span><span class="aa-drow__v">{{ $desig }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">Object Type</span><span class="aa-drow__v">{{ or $type "—" }}</span></div>
+        </section>
+
+        <section class="aa-spec-group">
+          <span class="aa-kicker">Acquisition</span>
+          <div class="aa-drow"><span class="aa-drow__k">Integration</span><span class="aa-drow__v">{{ if $singleFrame }}single frame{{ else }}{{ $integ }}{{ end }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">Subframes</span><span class="aa-drow__v">{{ if $singleFrame }}1 × {{ $exp }}{{ else }}{{ $frames }} × {{ $exp }}{{ end }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">Exposure</span><span class="aa-drow__v">{{ $exp }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">ISO</span><span class="aa-drow__v">{{ $iso }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">Aperture</span><span class="aa-drow__v">{{ if ne (printf "%v" $fnum) "—" }}f/{{ end }}{{ $fnum }}</span></div>
+          {{ if $focal }}<div class="aa-drow"><span class="aa-drow__k">Focal Length</span><span class="aa-drow__v">{{ $focal }}mm</span></div>{{ end }}
+          {{ if $location }}<div class="aa-drow"><span class="aa-drow__k">Location</span><span class="aa-drow__v">{{ $location }}</span></div>{{ end }}
+        </section>
+
+        <section class="aa-spec-group">
+          <span class="aa-kicker">Equipment</span>
+          <div class="aa-drow"><span class="aa-drow__k">Optics</span><span class="aa-drow__v">{{ $optics }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">Camera</span><span class="aa-drow__v">{{ $camera }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">Mount</span><span class="aa-drow__v">{{ $mount }}</span></div>
+          <div class="aa-drow"><span class="aa-drow__k">Sky</span><span class="aa-drow__v">Bortle {{ $bortle }}</span></div>
+        </section>
+
+        <section class="aa-spec-group aa-notes">
+          <span class="aa-kicker">Field Notes</span>
+          <div>{{ .Content }}</div>
+          {{ with site.Params.bio }}<p>{{ . }}</p>{{ end }}
+        </section>
+      </div>
+
+      <div class="aa-rail__foot">
+        <nav class="aa-prevnext" aria-label="Catalog navigation">
+          {{ if $prev }}
+            <a class="aa-prevnext__cell" href="{{ $prev.RelPermalink }}">
+              <span class="aa-prevnext__kicker">← Previous</span>
+              <span class="aa-prevnext__name">{{ $prev.LinkTitle }}</span>
+              <span class="aa-prevnext__type">{{ or $prev.Params.capture_object_type (index $prev.Params.tags 0) }}</span>
+            </a>
+          {{ else }}<div class="aa-prevnext__cell" aria-hidden="true"></div>{{ end }}
+          <div class="aa-prevnext__sep" aria-hidden="true"></div>
+          {{ if $next }}
+            <a class="aa-prevnext__cell aa-prevnext__cell--next" href="{{ $next.RelPermalink }}">
+              <span class="aa-prevnext__kicker">Next →</span>
+              <span class="aa-prevnext__name">{{ $next.LinkTitle }}</span>
+              <span class="aa-prevnext__type">{{ or $next.Params.capture_object_type (index $next.Params.tags 0) }}</span>
+            </a>
+          {{ else }}<div class="aa-prevnext__cell" aria-hidden="true"></div>{{ end }}
+        </nav>
+      </div>
+    </aside>
+
+  </section>
 {{ end }}

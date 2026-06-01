@@ -1,9 +1,79 @@
 {{ define "main" }}
-    {{ $captures := where site.RegularPages "Params.type" "eq" "capture" }}
-    {{ range $captures }}
-        <article class="capture-thumb-container">
-            <img fetchpriority="high" class="capture-thumb" src="{{  path.Join .File.Dir .Params.capture_image_thumb_path | relURL }}" alt="{{ .Params.capture_alt }}">
-            <h2 class="capture-heading thumb-heading"><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-        </article>
+  {{ $captures := where site.RegularPages "Params.type" "eq" "capture" }}
+
+  {{/* ---------- aggregate stats ---------- */}}
+  {{ $totalFrames := 0 }}
+  {{ $totalMinutes := 0.0 }}
+  {{ range $captures }}
+    {{ $totalFrames = add $totalFrames (int (default 0 .Params.capture_frames)) }}
+    {{/* Try to add this capture's integration to the running total. We accept
+         either an explicit `capture_integration_minutes` field (a number) or
+         we approximate from frames × exposure-seconds when the exposure is
+         written as e.g. "30s". */}}
+    {{ with .Params.capture_integration_minutes }}
+      {{ $totalMinutes = add $totalMinutes (float .) }}
+    {{ else }}
+      {{ $exp := default "" .Params.capture_exposure }}
+      {{ if and (hasSuffix $exp "s") (not (in $exp "/")) }}
+        {{ $secs := float (strings.TrimSuffix "s" $exp) }}
+        {{ $frames := float (int (default 0 .Params.capture_frames)) }}
+        {{ $totalMinutes = add $totalMinutes (div (mul $secs $frames) 60.0) }}
+      {{ end }}
     {{ end }}
+  {{ end }}
+  {{ $totalHours := printf "%.1fh" (div $totalMinutes 60.0) }}
+
+  <div class="aa-gallery-page">
+    {{ partial "header.html" . }}
+
+    <section class="aa-intro">
+      <p class="aa-intro__bio">{{ site.Params.bio }}</p>
+      <div class="aa-intro__stats">
+        <div class="aa-stat">
+          <span class="aa-stat__n">{{ printf "%02d" (len $captures) }}</span>
+          <span class="aa-stat__label">Objects</span>
+        </div>
+        <div class="aa-stat">
+          <span class="aa-stat__n">{{ $totalHours }}</span>
+          <span class="aa-stat__label">Integrated</span>
+        </div>
+        <div class="aa-stat">
+          <span class="aa-stat__n">{{ $totalFrames }}</span>
+          <span class="aa-stat__label">Subframes</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="aa-grid">
+      {{ range $captures }}
+        {{ $thumb := path.Join .File.Dir .Params.capture_image_thumb_path | relURL }}
+        {{ $sub   := or .Params.capture_object_subtitle (index .Params.objects 0) }}
+        {{ $type  := or .Params.capture_object_type (index .Params.tags 0) | default "" }}
+        {{ $integ := default "" .Params.capture_integration }}
+        {{ $frames := int (default 0 .Params.capture_frames) }}
+        {{ $exp   := default "" .Params.capture_exposure }}
+        {{ $date  := .Date | time.Format "2006.01.02" }}
+
+        <a class="aa-tile" href="{{ .RelPermalink }}" aria-label="View {{ .LinkTitle }}">
+          <span class="aa-tile__img" style="background-image: url('{{ $thumb }}');" role="img" aria-label="{{ .Params.capture_alt }}"></span>
+          <span class="aa-tile__scrim" aria-hidden="true"></span>
+          {{ with $type }}<span class="aa-tile__type">{{ . }}</span>{{ end }}
+          <span class="aa-tile__cue" aria-hidden="true">View <span>→</span></span>
+          <span class="aa-tile__body">
+            <h2 class="aa-tile__title">{{ .LinkTitle }}</h2>
+            <span class="aa-tile__meta aa-meta">
+              {{ with $sub }}<span>{{ . }}</span>{{ end }}
+              {{ if and $integ (ne $integ "—") }}
+                <span class="aa-meta__sep">/</span><span>{{ $integ }} integration</span>
+                <span class="aa-meta__sep">/</span><span>{{ $frames }} frames</span>
+              {{ else if $exp }}
+                <span class="aa-meta__sep">/</span><span>{{ $exp }}</span>
+                <span class="aa-meta__sep">/</span><span>{{ $date }}</span>
+              {{ end }}
+            </span>
+          </span>
+        </a>
+      {{ end }}
+    </div>
+  </div>
 {{ end }}
