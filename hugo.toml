@@ -14,7 +14,7 @@ title = 'Ad Astra'
     [params.gear]
         camera = 'Canon EOS 550D'
         mount  = 'SkyWatcher Star Adventurer 2i EQ'
-        optics = 'Samyang 135mm f/2'
+        optics = 'Carl Zeiss 135mm f/3.5'
 
     # Order in which acquisition details render on a capture page. Each inner
     # list is one visual group (rendered as a key/value table with a heading).

@@ -12,6 +12,7 @@ capture_image_thumb_path = 'vega_thumb.jpg' # recommended size 1024x512
 capture_location = 'Dodd Mill Farm' 
 capture_date = 'August 20, 2025'
 capture_camera = 'Canon EOS 550D'
+capture_optics = 'Carl Zeiss 135mm f/3.5'
 capture_integration = '13m'
 capture_frames = 26
 capture_exposure = '30s'
