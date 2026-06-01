@@ -51,9 +51,15 @@
     flex: 0 0 auto;
     min-height: 0;
     background-color: var(--frame);
-    background-size: cover;
     border: 10px solid var(--frame);
     box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.12);
+  }
+  .aa-view__image-el {
+    inset: 0;
+    object-fit: cover;
+    /* On mobile we always want cover within the 3:2 frame — the JS-computed
+       scale doesn't apply. */
+    transform: none;
   }
   html[data-theme="dark"] .aa-view__image {
     border: 10px solid var(--frame);
@@ -62,7 +68,8 @@
 
   /* On mobile the overlay collapses — title/sub move below the image. */
   .aa-view__overlay,
-  .aa-view__corner-caption { display: none; }
+  .aa-view__corner-caption,
+  .aa-fit-toggle { display: none; }
 
   /* The rail becomes the document flow */
   .aa-rail {

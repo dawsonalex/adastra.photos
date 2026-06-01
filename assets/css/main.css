@@ -317,12 +317,46 @@ img { display: block; max-width: 100%; height: auto; }
   flex: 1;
   min-height: 0;
   background-color: #000;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  overflow: hidden;
   box-shadow: var(--plate-shadow);
+  transition: box-shadow .55s cubic-bezier(.4, 0, .2, 1);
 }
+.aa-view__image-el {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transform: scale(var(--cover-scale, 1));
+  transform-origin: center center;
+  transition: transform .55s cubic-bezier(.4, 0, .2, 1);
+}
+.aa-view[data-fit="contain"] .aa-view__image-el { transform: scale(1); }
+.aa-view[data-fit="contain"] .aa-view__image    { box-shadow: none; }
 html[data-theme="dark"] .aa-view__image { box-shadow: none; }
+
+/* Fit/Fill toggle — floats top-right of the image plate.
+   We always render both icons; CSS shows the one that matches the
+   "next" action (the icon hints at where clicking will take you). */
+.aa-fit-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  padding: 8px 12px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+.aa-fit-toggle__icon { display: none; }
+.aa-view[data-fit="cover"]   .aa-fit-toggle__icon--fit  { display: block; }
+.aa-view[data-fit="contain"] .aa-fit-toggle__icon--fill { display: block; }
+
+/* When the rail is open, slide the toggle left so it stays visible next to
+   the rail's edge instead of disappearing behind it. */
+.aa-view[data-rail-open="true"] .aa-fit-toggle {
+  right: calc(min(470px, 92vw) + 16px);
+}
 
 .aa-view__overlay {
   position: absolute;

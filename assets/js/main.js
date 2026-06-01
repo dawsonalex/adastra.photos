@@ -67,6 +67,55 @@
           setOpen(false);
         }
       });
+
+      /* ---------------- Image fit/fill toggle ---------------- */
+
+      const FIT_KEY = 'aa_image_fit';
+      const labelEl = view.querySelector('[data-fit-label]');
+      const imgEl   = view.querySelector('[data-fit-img]');
+      const imgBox  = view.querySelector('.aa-view__image');
+
+      // Compute the scale needed to take object-fit:contain (the base) up to
+      // cover. Depends on the image's aspect ratio vs the container's, so we
+      // measure on image load and on container resize. The CSS variable is
+      // read by both .aa-view__image-el (transform) so the animation just
+      // follows whatever's current.
+      const recomputeScale = () => {
+        if (!imgEl || !imgBox) return;
+        const nw = imgEl.naturalWidth, nh = imgEl.naturalHeight;
+        const bw = imgBox.clientWidth,  bh = imgBox.clientHeight;
+        if (!nw || !nh || !bw || !bh) return;
+        const rImg = nw / nh, rBox = bw / bh;
+        const scale = Math.max(rImg / rBox, rBox / rImg);
+        view.style.setProperty('--cover-scale', scale.toFixed(4));
+      };
+
+      if (imgEl) {
+        if (imgEl.complete) recomputeScale();
+        imgEl.addEventListener('load', recomputeScale);
+      }
+      if (imgBox && 'ResizeObserver' in window) {
+        new ResizeObserver(recomputeScale).observe(imgBox);
+      } else {
+        window.addEventListener('resize', recomputeScale);
+      }
+
+      const applyFit = (mode) => {
+        view.setAttribute('data-fit', mode);
+        if (labelEl) labelEl.textContent = mode === 'cover' ? 'Fit' : 'Fill';
+      };
+      const storedFit = (() => {
+        try { return localStorage.getItem(FIT_KEY); } catch (e) { return null; }
+      })();
+      applyFit(storedFit === 'contain' ? 'contain' : 'cover');
+
+      view.querySelectorAll('[data-fit-toggle]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const next = view.getAttribute('data-fit') === 'cover' ? 'contain' : 'cover';
+          try { localStorage.setItem(FIT_KEY, next); } catch (e) {}
+          applyFit(next);
+        });
+      });
     }
   });
 })();

@@ -25,7 +25,7 @@
   {{ $prev := .PrevInSection }}
   {{ $next := .NextInSection }}
 
-  <section class="aa-view" data-rail-open="false" aria-label="Capture detail">
+  <section class="aa-view" data-rail-open="false" data-fit="cover" aria-label="Capture detail">
 
     {{/* ---------------- Image plate (always rendered) ---------------- */}}
     <div class="aa-view__plate">
@@ -36,7 +36,25 @@
         <a class="aa-wordmark aa-wordmark--sm aa-wordmark--header-sm" href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a>
       </div>
 
-      <div class="aa-view__image" style="background-image: url('{{ $img }}');" role="img" aria-label="{{ .Params.capture_alt }}">
+      <div class="aa-view__image">
+        <img class="aa-view__image-el" src="{{ $img }}" alt="{{ .Params.capture_alt }}" data-fit-img>
+        {{/* Fit/Fill toggle — floats top-right of the image. Defaults to
+             "Fill" (cover, crops to frame); clicking switches to "Fit"
+             (contain, letterboxes). main.js animates the change by scaling
+             the <img>, and persists the choice to localStorage. */}}
+        <button type="button" class="aa-cta aa-fit-toggle" data-fit-toggle
+          aria-label="Toggle image fit"
+          title="Switch between filling the screen and fitting the full frame">
+          <svg class="aa-fit-toggle__icon aa-fit-toggle__icon--fit" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect x="1.4" y="1.4" width="13.2" height="13.2" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="4.4" y="5.6" width="7.2" height="4.8" stroke="currentColor" stroke-width="1.2"/>
+          </svg>
+          <svg class="aa-fit-toggle__icon aa-fit-toggle__icon--fill" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+          </svg>
+          <span class="aa-fit-toggle__label" data-fit-label>Fit</span>
+        </button>
+
         {{/* Closed-state overlay: object name + ra/dec + open-rail CTA. */}}
         <div class="aa-view__overlay">
           <div>
