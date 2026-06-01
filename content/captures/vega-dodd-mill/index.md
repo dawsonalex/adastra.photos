@@ -8,7 +8,6 @@ tags = ['Alpha Lyrae']
 
 # Capture specific fields
 capture_image_path = 'vega.webp' 
-capture_image_thumb_path = 'vega_thumb.jpg' # recommended size 1024x512
 capture_location = 'Dodd Mill Farm' 
 capture_date = 'August 20, 2025'
 capture_camera = 'Canon EOS 550D'

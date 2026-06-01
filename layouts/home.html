@@ -56,7 +56,12 @@
 
     <div class="aa-grid">
       {{ range $captures }}
-        {{ $thumb := path.Join .File.Dir .Params.capture_image_thumb_path | relURL }}
+        {{/* Build-time thumbnails from the page bundle's full-res image.
+             Hugo caches processed outputs in resources/_gen/images/. */}}
+        {{ $orig := .Resources.GetMatch .Params.capture_image_path }}
+        {{ $small := $orig.Resize "400x webp q90" }}
+        {{ $med   := $orig.Resize "800x webp q90" }}
+        {{ $large := $orig.Resize "1200x webp q90" }}
         {{/* Guarded first-of: empty/nil slices would error on index. */}}
         {{ $objs := .Params.objects | default slice }}
         {{ $tgs  := .Params.tags    | default slice }}
@@ -72,7 +77,13 @@
         {{/* No aria-label on the anchor — it would override the inner title +
              meta + type chip, which together compose a richer accessible name. */}}
         <a class="aa-tile" href="{{ .RelPermalink }}">
-          <span class="aa-tile__img" style="background-image: url('{{ $thumb }}');" role="img" aria-label="{{ .Params.capture_alt }}"></span>
+          <img class="aa-tile__img"
+               src="{{ $med.RelPermalink }}"
+               srcset="{{ $small.RelPermalink }} 400w, {{ $med.RelPermalink }} 800w, {{ $large.RelPermalink }} 1200w"
+               sizes="(min-width: 1200px) 800px, 50vw"
+               width="{{ $med.Width }}" height="{{ $med.Height }}"
+               alt="{{ .Params.capture_alt }}"
+               loading="lazy" decoding="async">
           <span class="aa-tile__scrim" aria-hidden="true"></span>
           {{ with $type }}<span class="aa-tile__type">{{ . }}</span>{{ end }}
           <span class="aa-tile__cue" aria-hidden="true">View <span>→</span></span>

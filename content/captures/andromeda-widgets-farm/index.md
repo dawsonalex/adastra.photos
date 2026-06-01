@@ -8,7 +8,6 @@ tags = ['']
 
 # Capture specific fields
 capture_image_path = 'andromeda.webp'
-capture_image_thumb_path = 'andromeda_thumb.jpg'
 capture_object_type = 'Spiral Galaxy'
 capture_integration = '1h 28m'
 capture_location = 'Widgets Farm, Frome'

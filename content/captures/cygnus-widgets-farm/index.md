@@ -8,7 +8,6 @@ tags = ['Cygnus', 'Sadr']
 
 # Capture specific fields
 capture_image_path = 'sadr.webp'
-capture_image_thumb_path = 'sadr_thumb.jpg' # recommended size 1024x512
 capture_object_type = 'Emission Nebula'
 capture_location = 'Widgets Farm, Frome'
 capture_date = 'August 27, 2025'
