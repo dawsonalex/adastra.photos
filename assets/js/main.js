@@ -69,30 +69,121 @@
       });
 
       /* ---------------- Image fit/fill toggle ----------------
-         The active mode lives in html[data-fit] — set pre-paint by an
-         inline script in head.html, so the CSS object-fit value (cover by
-         default, contain when html[data-fit="contain"]) is already correct
-         on first paint. No measurement or animation logic needed. */
+         Hybrid CSS + JS: first paint uses CSS object-fit: cover so there's
+         no measurement on load. The first click hands off to JS, which
+         switches the <img> to object-fit: fill and drives explicit
+         width/height/left/top so the transition between cover and contain
+         is actually animatable (object-fit itself isn't).
 
-      const FIT_KEY = 'aa_image_fit';
+         No persistence — every page load starts on cover. */
 
-      // aria-pressed reflects whether the toggle is in its "on" (non-default)
-      // state — true when data-fit is "contain" (letterboxed), false when
-      // "cover". Sync it to the pre-paint value on load, then on every click.
       const fitButtons = view.querySelectorAll('[data-fit-toggle]');
-      const syncPressed = (mode) => {
-        fitButtons.forEach((b) => b.setAttribute('aria-pressed', mode === 'contain' ? 'true' : 'false'));
-      };
-      syncPressed(root.getAttribute('data-fit'));
+      const fitContainer = view.querySelector('.aa-view__image');
+      const fitImg = view.querySelector('[data-fit-img]');
 
-      fitButtons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const next = root.getAttribute('data-fit') === 'cover' ? 'contain' : 'cover';
-          try { localStorage.setItem(FIT_KEY, next); } catch (e) {}
-          root.setAttribute('data-fit', next);
+      if (fitButtons.length && fitContainer && fitImg) {
+        const TRANSITION =
+          'width .45s cubic-bezier(.4,0,.2,1),' +
+          'height .45s cubic-bezier(.4,0,.2,1),' +
+          'left .45s cubic-bezier(.4,0,.2,1),' +
+          'top .45s cubic-bezier(.4,0,.2,1)';
+
+        let mode = 'cover';     // matches the CSS default
+        let handedOff = false;  // has JS taken over geometry?
+        let coverRect = null;
+        let containRect = null;
+
+        // Compute the two target rects from container size + naturals.
+        // Both preserve image aspect ratio, so independent width/height
+        // transitions stay aspect-correct at every intermediate frame —
+        // which is why object-fit: fill doesn't distort.
+        const computeRects = () => {
+          const cw = fitContainer.clientWidth;
+          const ch = fitContainer.clientHeight;
+          const iw = fitImg.naturalWidth;
+          const ih = fitImg.naturalHeight;
+          if (!cw || !ch || !iw || !ih) return false;
+          const sC = Math.min(cw / iw, ch / ih);
+          const sV = Math.max(cw / iw, ch / ih);
+          containRect = { w: iw * sC, h: ih * sC, l: (cw - iw * sC) / 2, t: (ch - ih * sC) / 2 };
+          coverRect   = { w: iw * sV, h: ih * sV, l: (cw - iw * sV) / 2, t: (ch - ih * sV) / 2 };
+          return true;
+        };
+
+        const applyRect = (rect, animate) => {
+          fitImg.style.transition = animate ? TRANSITION : 'none';
+          fitImg.style.width  = rect.w + 'px';
+          fitImg.style.height = rect.h + 'px';
+          fitImg.style.left   = rect.l + 'px';
+          fitImg.style.top    = rect.t + 'px';
+          if (!animate) fitImg.getBoundingClientRect(); // flush so the next change animates from here
+        };
+
+        const syncPressed = (m) => {
+          fitButtons.forEach((b) => b.setAttribute('aria-pressed', m === 'contain' ? 'true' : 'false'));
+        };
+
+        const setButtonsEnabled = (on) => {
+          fitButtons.forEach((b) => { b.disabled = !on; });
+        };
+
+        // Disabled until decode — naturalWidth/Height are 0 before then,
+        // and a snap-toggle would defeat the animation we're enabling.
+        setButtonsEnabled(false);
+        const onReady = () => {
+          if (fitImg.naturalWidth && fitImg.naturalHeight) setButtonsEnabled(true);
+        };
+        if (fitImg.complete) onReady();
+        else fitImg.addEventListener('load', onReady, { once: true });
+
+        const handoff = () => {
+          if (handedOff) return false;
+          if (!computeRects()) return false;
+          // Override the stylesheet's inset:0 + object-fit:cover with
+          // explicit geometry that's pixel-identical to the cover state.
+          fitImg.style.objectFit = 'fill';
+          fitImg.style.right = 'auto';
+          fitImg.style.bottom = 'auto';
+          applyRect(coverRect, false);
+          handedOff = true;
+          return true;
+        };
+
+        const setMode = (next, animate) => {
+          mode = next;
+          root.setAttribute('data-fit', next); // drives icon + label CSS
+          applyRect(next === 'cover' ? coverRect : containRect, animate);
           syncPressed(next);
+        };
+
+        fitButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            if (!handedOff) {
+              if (!handoff()) return;
+              // Two rAFs so the snap commits before the animation starts —
+              // otherwise the browser collapses snap + animate into one
+              // style change and there's nothing to transition from.
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => setMode('contain', true));
+              });
+              return;
+            }
+            setMode(mode === 'cover' ? 'contain' : 'cover', true);
+          });
         });
-      });
+
+        // Recompute on container resize so the rects track viewport
+        // changes. CSS handles layout until handoff, so this is a no-op
+        // before the first click.
+        if (typeof ResizeObserver !== 'undefined') {
+          const ro = new ResizeObserver(() => {
+            if (!handedOff) return;
+            if (!computeRects()) return;
+            applyRect(mode === 'cover' ? coverRect : containRect, false);
+          });
+          ro.observe(fitContainer);
+        }
+      }
     }
   });
 })();

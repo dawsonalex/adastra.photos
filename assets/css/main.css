@@ -349,12 +349,14 @@ html[data-theme="dark"] .aa-view__image { box-shadow: none; }
   font-size: 11px;
   letter-spacing: 0.14em;
 }
+/* Default state = cover, so the "fit" icon (the action you'd take next)
+   shows without needing a data-fit attribute on <html>. JS sets
+   data-fit="contain" on toggle to swap to the "fill" icon. */
 .aa-fit-toggle__icon { display: none; }
-html[data-fit="cover"]   .aa-fit-toggle__icon--fit  { display: block; }
+.aa-fit-toggle__icon--fit { display: block; }
+html[data-fit="contain"] .aa-fit-toggle__icon--fit  { display: none; }
 html[data-fit="contain"] .aa-fit-toggle__icon--fill { display: block; }
 
-/* Label text is CSS-driven so the pre-paint data-fit attribute on <html>
-   determines what the user sees on first paint — no DOM-update flicker. */
 .aa-fit-toggle__label::before { content: "Fit"; }
 html[data-fit="contain"] .aa-fit-toggle__label::before { content: "Fill"; }
 

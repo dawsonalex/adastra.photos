@@ -39,9 +39,10 @@
       <div class="aa-view__image">
         <img class="aa-view__image-el" src="{{ $img }}" alt="{{ .Params.capture_alt }}" data-fit-img>
         {{/* Fit/Fill toggle — floats top-right of the image. Defaults to
-             "Fill" (cover, crops to frame); clicking switches to "Fit"
-             (contain, letterboxes). main.js animates the change by scaling
-             the <img>, and persists the choice to localStorage. */}}
+             cover (fills the frame, crops); clicking switches to contain
+             (letterboxes the full frame). main.js animates the change by
+             handing off from CSS object-fit to explicit width/height/
+             left/top on the <img>. No persistence across page loads. */}}
         <button type="button" class="aa-cta aa-fit-toggle" data-fit-toggle
           aria-label="Toggle image fit"
           aria-pressed="false"
