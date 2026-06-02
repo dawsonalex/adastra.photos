@@ -24,12 +24,13 @@ capture_date = '2025-08-10T23:53:49+04:00'
 capture_location = 'Home' # e.g., 'Dod Mill Farm'
 capture_bortle_scale = 0
 capture_camera = 'iPhone 14 back dual wide camera 5.7mm f/1.5'
+capture_optics = 'SkyWatcher Heritage 150P'
 capture_frames = 1           # subframe count
 capture_exposure = '1/85s'        # e.g., '30s', '1/200s'
 capture_iso = 125
 capture_f_number = 1.5
 capture_focal_length = '5.7mm'
-capture_mount = 'SkyWatcher Heritage 150P'
+capture_mount = 'Dobsonian'
 capture_integration = '-'     # human-readable total, e.g., '52.5m', '1h 48m' (use '—' for single-frame)
 
 # Coordinates
