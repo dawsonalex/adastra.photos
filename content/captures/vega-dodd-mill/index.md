@@ -7,9 +7,10 @@ objects = ['Vega']
 tags = ['Alpha Lyrae'] 
 
 # Capture specific fields
-capture_image_path = 'vega.webp' 
+capture_image_path = 'vega.webp'
+capture_alt = 'Vega, the brightest star in Lyra, set against a dense scattering of fainter background stars'
 capture_location = 'Dodd Mill Farm' 
-capture_date = 'August 20, 2025'
+capture_date = '2025-08-20'
 capture_camera = 'Canon EOS 550D'
 capture_optics = 'Carl Zeiss 135mm f/3.5'
 capture_integration = '13m'

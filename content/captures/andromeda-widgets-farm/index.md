@@ -4,13 +4,14 @@ date = '2025-09-13T22:49:41+01:00'
 title = 'Andromeda Galaxy'
 
 objects = ['M31', 'M110']
-tags = ['']
+tags = ['Spiral Galaxy']
 
 # Capture specific fields
 capture_image_path = 'andromeda.webp'
+capture_alt = 'The Andromeda Galaxy (M31) with its companion M110, a faint dusty spiral against a dark sky'
 capture_object_type = 'Spiral Galaxy'
 capture_location = 'Widgets Farm, Frome'
-capture_date = 'August 27, 2025'
+capture_date = '2025-08-27'
 capture_camera = 'Canon EOS 550D'
 capture_optics = 'Carl Zeiss 135mm f/3.5'
 capture_frames = 44

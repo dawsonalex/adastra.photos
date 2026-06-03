@@ -24,7 +24,6 @@
     {{ partial "header.html" . }}
 
     <section class="aa-intro">
-      <p class="aa-intro__bio">{{ site.Params.bio }}</p>
       <div class="aa-intro__stats">
         <div class="aa-stat">
           <span class="aa-stat__n">{{ printf "%02d" (len $captures) }}</span>
@@ -48,6 +47,9 @@
         {{ $orig := .Resources.GetMatch .Params.capture_image_path }}
         {{ if not $orig }}
           {{ errorf "capture %q: image resource %q not found in bundle" .File.Path .Params.capture_image_path }}
+        {{ end }}
+        {{ if not .Params.capture_alt }}
+          {{ errorf "capture %q: capture_alt is required (front-matter)" .File.Path }}
         {{ end }}
         {{ $small := $orig.Resize "400x webp q90" }}
         {{ $med   := $orig.Resize "800x webp q90" }}

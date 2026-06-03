@@ -1,7 +1,28 @@
 {{ partialCached "head/google_analytics.html" . }}
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1.0, width=device-width">
-<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}</title>
+
+{{/* Title pattern:
+       Home          → "Ad Astra"
+       Capture page  → "Andromeda Galaxy (M31) | Ad Astra"  (includes the
+                       first catalog designation/object so the SERP snippet
+                       carries keyword weight)
+       Other         → "Page Title | Ad Astra"
+*/}}
+{{ $titleSuffix := "" }}
+{{ if eq .Params.type "capture" }}
+  {{ $objs := .Params.objects | default slice }}
+  {{ $desig := .Params.capture_designation | default "" }}
+  {{ $tag := "" }}
+  {{ if gt (len $objs) 0 }}{{ $tag = index $objs 0 }}{{ end }}
+  {{ if and $desig (ne $desig "—") (ne $desig "-") }}{{ $tag = $desig }}{{ end }}
+  {{ if and $tag (ne $tag .Title) }}{{ $titleSuffix = printf " (%s)" $tag }}{{ end }}
+{{ end }}
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s%s | %s" .Title $titleSuffix site.Title }}{{ end }}</title>
+
+{{ partial "head/seo.html" . }}
+{{ partial "head/jsonld.html" . }}
+
 <link rel="icon" href="{{ "favicon.ico" | relURL }}">
 
 {{/* Prevent dark/light flash before main.js runs by resolving the theme inline. */}}

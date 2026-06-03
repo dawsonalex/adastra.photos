@@ -8,9 +8,10 @@ tags = ['Cygnus', 'Sadr']
 
 # Capture specific fields
 capture_image_path = 'sadr.webp'
+capture_alt = 'The Sadr region of Cygnus, dense red and pink emission nebulosity around the bright central star'
 capture_object_type = 'Emission Nebula'
 capture_location = 'Widgets Farm, Frome'
-capture_date = 'August 27, 2025'
+capture_date = '2025-08-27'
 capture_camera = 'Canon EOS 550D'
 capture_optics = 'Carl Zeiss 135mm f/3.5'
 capture_frames = 52

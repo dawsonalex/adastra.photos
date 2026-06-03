@@ -1,0 +1,65 @@
+{{/*
+  JSON-LD structured data.
+
+    * Capture pages → schema.org/Photograph with the acquisition metadata we
+      already collect in front-matter. Helps Google Image Search and may earn
+      a richer SERP for catalog terms ("M31", "Sadr region", etc.).
+    * Homepage → a WebSite + Person pair so Google can wire up the
+      knowledge-graph identity for the photographer.
+
+  We intentionally do not emit JSON-LD for taxonomy/term/section pages —
+  there's no canonical schema that fits, and the noise dilutes the signals
+  from the pages that do have real structured content.
+*/}}
+
+{{ if eq .Params.type "capture" }}
+  {{ $img := "" }}
+  {{ with .Resources.GetMatch .Params.capture_image_path }}
+    {{ $resized := .Resize "1200x webp q85" }}
+    {{ $img = $resized.Permalink }}
+  {{ end }}
+  {{ $keywords := slice }}
+  {{ with .Params.objects }}{{ $keywords = $keywords | append . }}{{ end }}
+  {{ with .Params.tags }}{{ $keywords = $keywords | append . }}{{ end }}
+  {{ $desc := .Params.description | default (.Summary | plainify | truncate 300) }}
+  {{ $data := dict
+        "@context" "https://schema.org"
+        "@type" "Photograph"
+        "name" .Title
+        "headline" .Title
+        "url" .Permalink
+        "description" $desc
+        "datePublished" (.Date.Format "2006-01-02")
+        "dateCreated" (or .Params.capture_date (.Date.Format "2006-01-02"))
+        "keywords" (delimit $keywords ", ")
+  }}
+  {{ if $img }}{{ $data = merge $data (dict "contentUrl" $img "thumbnailUrl" $img "image" $img) }}{{ end }}
+  {{ with site.Params.author }}
+    {{ $data = merge $data (dict "creator" (dict "@type" "Person" "name" .) "copyrightHolder" (dict "@type" "Person" "name" .)) }}
+  {{ end }}
+  {{ with .Params.capture_location }}
+    {{ $data = merge $data (dict "contentLocation" (dict "@type" "Place" "name" .)) }}
+  {{ end }}
+  <script type="application/ld+json">{{ $data | jsonify (dict "indent" "  ") | safeJS }}</script>
+{{ else if .IsHome }}
+  {{ $site := dict
+        "@context" "https://schema.org"
+        "@type" "WebSite"
+        "url" site.Home.Permalink
+        "name" site.Title
+        "description" (site.Params.description | default "")
+  }}
+  {{ with site.Params.author }}
+    {{ $site = merge $site (dict "author" (dict "@type" "Person" "name" .)) }}
+  {{ end }}
+  <script type="application/ld+json">{{ $site | jsonify (dict "indent" "  ") | safeJS }}</script>
+  {{ with site.Params.author }}
+    {{ $person := dict
+          "@context" "https://schema.org"
+          "@type" "Person"
+          "name" .
+          "url" site.Home.Permalink
+    }}
+    <script type="application/ld+json">{{ $person | jsonify (dict "indent" "  ") | safeJS }}</script>
+  {{ end }}
+{{ end }}

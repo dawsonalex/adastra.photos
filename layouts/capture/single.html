@@ -26,6 +26,12 @@
   {{ $location    := or .Params.capture_location "" }}
   {{ $bortle      := or .Params.capture_bortle_scale site.Params.defaultBortleScale }}
 
+  {{/* Alt text is required for SEO + a11y — fail the build if a capture
+       omits it rather than silently shipping alt="" to image crawlers. */}}
+  {{ if not .Params.capture_alt }}
+    {{ errorf "capture %q: capture_alt is required (front-matter)" .File.Path }}
+  {{ end }}
+
   {{ $singleFrame := lt $frames 2 }}
   {{ $prev := .PrevInSection }}
   {{ $next := .NextInSection }}
@@ -42,7 +48,10 @@
       </div>
 
       <div class="aa-view__image">
-        <img class="aa-view__image-el" src="{{ $img }}" alt="{{ .Params.capture_alt }}" data-fit-img>
+        {{/* LCP element — hint to the browser to fetch this ahead of
+             non-critical assets. Keep eager (default) loading. */}}
+        <img class="aa-view__image-el" src="{{ $img }}" alt="{{ .Params.capture_alt }}" data-fit-img
+             fetchpriority="high" decoding="async">
         {{/* Fit/Fill toggle — floats top-right of the image. Defaults to
              cover (fills the frame, crops); clicking switches to contain
              (letterboxes the full frame). main.js animates the change by
@@ -151,7 +160,6 @@
         <section class="aa-spec-group aa-notes">
           <span class="aa-kicker">Field Notes</span>
           <div>{{ .Content }}</div>
-          {{ with site.Params.bio }}<p>{{ . }}</p>{{ end }}
         </section>
       </div>
 

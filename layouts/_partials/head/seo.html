@@ -1,0 +1,82 @@
+{{/*
+  SEO meta tags: description, canonical, robots, Open Graph, Twitter.
+
+  Resolution order for description:
+    1. Page front-matter `description`
+    2. Page `.Summary` (auto-generated from content)
+    3. Site-wide `site.Params.description`
+
+  Resolution order for the social-share image:
+    1. Capture pages — the bundled capture image, resized to 1200w webp.
+       (This is the same source we use for the on-page hero, so Hugo's image
+       cache means no extra work.)
+    2. Page-level `og_image` front-matter override (relative path inside
+       /static, like the site default).
+    3. Site default `site.Params.ogImage` (relative to /static).
+
+  Everything is absolute-URL'd because OG/Twitter scrapers require it.
+*/}}
+
+{{ $isCapture := eq .Params.type "capture" }}
+{{ $desc := "" }}
+{{ with .Params.description }}{{ $desc = . }}{{ end }}
+{{ if not $desc }}{{ with .Summary }}{{ $desc = . | plainify | truncate 200 }}{{ end }}{{ end }}
+{{ if not $desc }}{{ with site.Params.description }}{{ $desc = . }}{{ end }}{{ end }}
+
+{{/* Build the share image URL. */}}
+{{ $ogImg := "" }}
+{{ $ogW   := 1200 }}
+{{ $ogH   := 630 }}
+{{ if $isCapture }}
+  {{ with .Resources.GetMatch .Params.capture_image_path }}
+    {{ $resized := .Resize "1200x webp q85" }}
+    {{ $ogImg = $resized.Permalink }}
+    {{ $ogW = $resized.Width }}
+    {{ $ogH = $resized.Height }}
+  {{ end }}
+{{ end }}
+{{ if not $ogImg }}
+  {{ with .Params.og_image }}{{ $ogImg = . | absURL }}{{ end }}
+{{ end }}
+{{ if not $ogImg }}
+  {{ with site.Params.ogImage }}{{ $ogImg = . | absURL }}{{ end }}
+{{ end }}
+
+{{ with $desc }}<meta name="description" content="{{ . }}">{{ end }}
+<link rel="canonical" href="{{ .Permalink }}">
+{{/* Thin taxonomy/term listing pages (e.g. /objects/, /tags/sadr/) are
+     auto-generated stubs with a single <h1> and a list of links. They
+     dilute crawl budget and risk thin-content flags, so noindex by
+     default. Real pages (home, captures) stay indexable. */}}
+{{ $thin := or (eq .Kind "taxonomy") (eq .Kind "term") }}
+<meta name="robots" content="{{ if or .Params.noindex $thin }}noindex,follow{{ else }}index,follow{{ end }}">
+{{ with site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}
+
+{{/* Open Graph */}}
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
+{{ with $desc }}<meta property="og:description" content="{{ . }}">{{ end }}
+<meta property="og:type" content="{{ if $isCapture }}article{{ else if .IsHome }}website{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:locale" content="{{ replace site.Language.LanguageCode "-" "_" }}">
+{{ with $ogImg }}
+<meta property="og:image" content="{{ . }}">
+<meta property="og:image:width" content="{{ $ogW }}">
+<meta property="og:image:height" content="{{ $ogH }}">
+{{ end }}
+{{ if $isCapture }}
+  {{ with .Params.capture_alt }}<meta property="og:image:alt" content="{{ . }}">{{ end }}
+  {{ with .Date }}<meta property="article:published_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}">{{ end }}
+  {{ with site.Params.author }}<meta property="article:author" content="{{ . }}">{{ end }}
+{{ end }}
+
+{{/* Twitter cards (mirror OG; `summary_large_image` for the photo grid). */}}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
+{{ with $desc }}<meta name="twitter:description" content="{{ . }}">{{ end }}
+{{ with $ogImg }}<meta name="twitter:image" content="{{ . }}">{{ end }}
+
+{{/* RSS autodiscovery — Hugo emits /index.xml automatically. */}}
+{{ with .OutputFormats.Get "RSS" }}
+<link rel="alternate" type="application/rss+xml" title="{{ site.Title }}" href="{{ .Permalink }}">
+{{ end }}

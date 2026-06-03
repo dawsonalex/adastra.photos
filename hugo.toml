@@ -1,10 +1,19 @@
 baseURL = 'https://adastra.photos/'
 languageCode = 'en-US'
 title = 'Ad Astra'
+enableRobotsTXT = true
 
 [params]
-    # Shown on the gallery hero. Keep this short — one or two sentences.
-#    bio = 'Backyard deep-sky photography from a Bortle 6 sky — one DSLR, one tracker, a great deal of patience.'
+    # Used for <meta name="description"> on the homepage and as the default
+    # Open Graph / Twitter description site-wide.
+    description = 'Backyard deep-sky astrophotography by Alex Dawson — Andromeda, Cygnus, the Moon and more, captured with a Canon DSLR and a Star Adventurer tracker.'
+
+    # Author / creator credit, surfaced in JSON-LD and meta tags.
+    author = 'Alex Dawson'
+
+    # Default Open Graph image (relative to /static) used on pages that don't
+    # have a bundled capture image. 1200x630 recommended.
+    ogImage = 'img/og-default.webp'
 
     # Default Bortle reading shown in the "Sky" row when a capture omits its own.
     defaultBortleScale = 6
