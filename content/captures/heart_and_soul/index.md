@@ -7,7 +7,7 @@ objects = ['Heart Nebula', 'IC 1805', 'Soul Nebula', 'IC 1848']
 tags = ['nebula']
 
 # Image
-capture_image_path = 'heart_and_soul.webp'
+capture_image_path = 'heart_and_soul_16x9.webp'
 capture_alt = 'An image of the Heart and Soul nebula' # accessible description of the image
 
 # Identification (shown in the gallery card + view page header)
@@ -22,7 +22,7 @@ capture_date = '2026-08-10T23:18:29+01:00'
 capture_location = '' # e.g., 'Dod Mill Farm'
 capture_bortle_scale = 4
 capture_camera = 'Canon EOS 550D'
-capture_frames = 133           # subframe count
+capture_frames = 267           # subframe count
 capture_exposure = '90s'        # e.g., '30s', '1/200s'
 capture_iso = 800
 capture_f_number = 3.5
